@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Concurrent;
+using System.IO;
 using Microsoft.Extensions.Options;
 using RabbitMQ.Client;
 
