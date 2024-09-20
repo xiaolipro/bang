@@ -4,27 +4,19 @@ using Microsoft.Extensions.Options;
 
 namespace Fake.EntityFrameworkCore.Auditing;
 
-public class EntityChangeHelper : IEntityChangeHelper
+public class EntityChangeHelper(
+    IOptions<FakeAuditingOptions> options,
+    IFakeClock clock,
+    IFakeJsonSerializer jsonSerializer,
+    IAuditingHelper auditingHelper,
+    IAuditingManager auditingManager)
+    : IEntityChangeHelper
 {
-    protected IAuditingManager AuditingManager { get; }
-    protected IFakeJsonSerializer JsonSerializer { get; }
-    protected FakeAuditingOptions Options { get; }
-    protected IAuditingHelper AuditingHelper { get; }
-    protected IFakeClock Clock { get; }
-
-    public EntityChangeHelper(
-        IOptions<FakeAuditingOptions> options,
-        IFakeClock clock,
-        IFakeJsonSerializer jsonSerializer,
-        IAuditingHelper auditingHelper,
-        IAuditingManager auditingManager)
-    {
-        Clock = clock;
-        JsonSerializer = jsonSerializer;
-        AuditingHelper = auditingHelper;
-        AuditingManager = auditingManager;
-        Options = options.Value;
-    }
+    protected IAuditingManager AuditingManager { get; } = auditingManager;
+    protected IFakeJsonSerializer JsonSerializer { get; } = jsonSerializer;
+    protected FakeAuditingOptions Options { get; } = options.Value;
+    protected IAuditingHelper AuditingHelper { get; } = auditingHelper;
+    protected IFakeClock Clock { get; } = clock;
 
     #region 创建实体变更集合
 
