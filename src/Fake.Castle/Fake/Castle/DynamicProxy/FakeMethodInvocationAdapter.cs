@@ -4,20 +4,14 @@ using Castle.DynamicProxy;
 
 namespace Fake.Castle.DynamicProxy;
 
-public class FakeMethodInvocationAdapter : FakeMethodInvocationAdapterBase
+public class FakeMethodInvocationAdapter(
+    IInvocation invocation,
+    IInvocationProceedInfo proceedInfo,
+    Func<IInvocation, IInvocationProceedInfo, Task> proceed)
+    : FakeMethodInvocationAdapterBase(invocation)
 {
-    private readonly IInvocationProceedInfo _proceedInfo;
-    private readonly Func<IInvocation, IInvocationProceedInfo, Task> _proceed;
-
-    public FakeMethodInvocationAdapter(IInvocation invocation, IInvocationProceedInfo proceedInfo,
-        Func<IInvocation, IInvocationProceedInfo, Task> proceed) : base(invocation)
-    {
-        _proceedInfo = proceedInfo;
-        _proceed = proceed;
-    }
-
     public override async Task ProcessAsync()
     {
-        await _proceed(Invocation, _proceedInfo);
+        await proceed(Invocation, proceedInfo);
     }
 }
