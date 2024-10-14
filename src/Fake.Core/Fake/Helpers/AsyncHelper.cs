@@ -1,4 +1,4 @@
-﻿using Nito.AsyncEx;
+﻿using Fake.Helpers.SyncEx;
 
 namespace Fake.Helpers;
 
@@ -12,21 +12,16 @@ public static class AsyncHelper
     /// <returns></returns>
     public static TResult RunSync<TResult>(Func<Task<TResult>> func)
     {
-        return AsyncContext.Run(func);
+        return SyncWrapper.Run(func);
     }
 
-    /// <summary>
-    /// 同步运行任务
-    /// </summary>
-    /// <param name="func"></param>
-    /// <returns></returns>
     public static void RunSync(Func<Task> func)
     {
-        AsyncContext.Run(func);
+        SyncWrapper.Run(func);
     }
 
     public static void RunSync(Task task)
     {
-        AsyncContext.Run(() => task);
+        SyncWrapper.Run(() => task);
     }
 }

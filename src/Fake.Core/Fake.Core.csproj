@@ -10,7 +10,6 @@
     <ItemGroup>
         <PackageReference Include="Microsoft.Extensions.Logging.Configuration" Version="$(MicrosoftPackageVersion)"/>
         <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="$(MicrosoftPackageVersion)"/>
-        <PackageReference Include="Nito.AsyncEx.Context" Version="5.1.2"/>
         <PackageReference Include="System.Collections.Immutable" Version="$(MicrosoftPackageVersion)"/>
         <PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="$(MicrosoftPackageVersion)"/>
         <PackageReference Include="Microsoft.Extensions.Configuration.CommandLine" Version="$(MicrosoftPackageVersion)"/>

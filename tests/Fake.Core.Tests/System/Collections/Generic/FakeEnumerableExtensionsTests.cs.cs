@@ -13,21 +13,6 @@ public class FakeEnumerableExtensionsTests
         _testOutputHelper = testOutputHelper;
     }
 
-    [Fact]
-    void t()
-    {
-        string zipPath =
-            @"C:\Users\23577\AppData\Local\Temp\50448458-9e24-4b2f-8ee5-e7c132717377\发票批量下载_20240611182230(1).zip";
-        string extractPath = "C:\\Users\\23577\\AppData\\Local\\Temp\\50448458-9e24-4b2f-8ee5-e7c132717377\\";
-
-        // Ensure the extraction directory exists
-        Directory.CreateDirectory(extractPath);
-
-        string encoding = "UTF-8"; // Change to the correct encoding if needed
-
-        ExtractZipFile(zipPath, extractPath, encoding);
-    }
-
     static void ExtractZipFile(string zipPath, string extractPath, string encoding)
     {
         Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
