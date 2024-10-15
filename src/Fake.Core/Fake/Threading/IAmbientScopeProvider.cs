@@ -1,5 +1,9 @@
 ﻿namespace Fake.Threading;
 
+/// <summary>
+/// 环绕式作用域 供应商
+/// </summary>
+/// <typeparam name="T"></typeparam>
 public interface IAmbientScopeProvider<T>
 {
     /// <summary>

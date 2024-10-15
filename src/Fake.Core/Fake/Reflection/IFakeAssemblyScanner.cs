@@ -5,7 +5,7 @@ namespace Fake.Reflection;
 /// <summary>
 /// 程序集扫描器
 /// </summary>
-public interface IAssemblyScanner
+public interface IFakeAssemblyScanner
 {
     IReadOnlyList<Assembly> Scan();
 }

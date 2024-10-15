@@ -34,7 +34,7 @@ public class ModuleLoaderTests
     [Fact]
     void 模块依赖循环应该抛异常()
     {
-        Should.Throw<ArgumentException>(() =>
+        Should.Throw<FakeException>(() =>
         {
             var loader = new FakeModuleLoader();
             var services = new ServiceCollection();

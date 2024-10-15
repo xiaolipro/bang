@@ -10,10 +10,10 @@ public sealed partial class SyncWrapper : IDisposable
     private readonly TaskFactory _taskFactory;
     private int _pendingNum;
 
-    public static SyncWrapper? Current =>
+    private static SyncWrapper? Current =>
         (SynchronizationContext.Current as SyncWrapperSynchronizationContext)?.Wrapper;
 
-    public SyncWrapper()
+    private SyncWrapper()
     {
         _queue = new BlockingCollection<(Task task, bool propagateExceptions)>();
         _taskScheduler = new SyncWrapperTaskScheduler(this);

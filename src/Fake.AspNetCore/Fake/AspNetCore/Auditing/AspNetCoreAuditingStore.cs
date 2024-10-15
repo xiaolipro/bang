@@ -16,14 +16,14 @@ public class AspNetCoreAuditingStore(ILogger<AspNetCoreAuditingStore> logger) : 
     protected virtual string Build(AuditLogInfo auditInfo)
     {
         var sb = new StringBuilder();
-        sb.AppendLine($"AUDIT LOG: {auditInfo.GetExtraPropertiesOrNull(AspNetCoreAuditLogContributor.RequestSummary)}");
+        sb.AppendLine($"AUDIT LOG: {auditInfo.GetExtraProperty(AspNetCoreAuditLogContributor.RequestSummary)}");
         sb.AppendLine(
-            $"|- TraceIdentifier: {auditInfo.GetExtraPropertiesOrNull(AspNetCoreAuditLogContributor.TraceIdentifier)}");
+            $"|- TraceIdentifier: {auditInfo.GetExtraProperty(AspNetCoreAuditLogContributor.TraceIdentifier)}");
         sb.AppendLine($"|- UserName-Id: {auditInfo.UserName} - {auditInfo.UserId}");
         sb.AppendLine(
-            $"|- ClientIpAddress: {auditInfo.GetExtraPropertiesOrNull(AspNetCoreAuditLogContributor.ClientIpAddress)}");
+            $"|- ClientIpAddress: {auditInfo.GetExtraProperty(AspNetCoreAuditLogContributor.ClientIpAddress)}");
         sb.AppendLine(
-            $"|- UserUserAgent: {auditInfo.GetExtraPropertiesOrNull(AspNetCoreAuditLogContributor.UserAgent)}");
+            $"|- UserUserAgent: {auditInfo.GetExtraProperty(AspNetCoreAuditLogContributor.UserAgent)}");
         sb.AppendLine($"|- ExecutionDuration: {auditInfo.ExecutionDuration} ms");
 
         if (auditInfo.Actions.Count != 0)

@@ -3,7 +3,7 @@
 namespace Fake.Threading;
 
 /// <summary>
-/// 线程本地存储
+/// 线程本地存储 缓存
 /// </summary>
 public static class CallContext
 {

@@ -7,7 +7,7 @@ namespace Fake.Reflection;
 /// <summary>
 /// 扫描所有Fake模块相关的程序集
 /// </summary>
-public class FakeAssemblyScanner : IAssemblyScanner
+public class FakeAssemblyScanner : IFakeAssemblyScanner
 {
     private readonly IModuleContainer _moduleContainer;
     private readonly Lazy<IReadOnlyList<Assembly>> _assemblies;

@@ -4,15 +4,8 @@ using Fake.Helpers;
 
 namespace Fake.Core.Tests.System.Collections.Generic;
 
-public class FakeEnumerableExtensionsTests
+public class FakeEnumerableExtensionsTests(ITestOutputHelper testOutputHelper)
 {
-    private readonly ITestOutputHelper _testOutputHelper;
-
-    public FakeEnumerableExtensionsTests(ITestOutputHelper testOutputHelper)
-    {
-        _testOutputHelper = testOutputHelper;
-    }
-
     static void ExtractZipFile(string zipPath, string extractPath, string encoding)
     {
         Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
@@ -49,7 +42,7 @@ public class FakeEnumerableExtensionsTests
         {
             index.ShouldBe(cnt);
             cnt++;
-            _testOutputHelper.WriteLine(index + "：" + item);
+            testOutputHelper.WriteLine(index + "：" + item);
         }
     }
 
@@ -105,8 +98,8 @@ public class FakeEnumerableExtensionsTests
         };
         var list = RandomHelper.Shuffle(new[] { 'A', 'B', 'C', 'D', 'E', 'F', 'G' });
 
-        var res = Should.Throw<ArgumentException>(() => { list = list.SortByDependencies(c => dependencies[c]); });
+        var res = Should.Throw<FakeException>(() => { list = list.SortByDependencies(c => dependencies[c]); });
 
-        _testOutputHelper.WriteLine(res.Message);
+        testOutputHelper.WriteLine(res.Message);
     }
 }

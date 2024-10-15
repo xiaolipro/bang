@@ -1,4 +1,6 @@
-﻿namespace System.Collections.Generic;
+﻿using Fake;
+
+namespace System.Collections.Generic;
 
 public static class FakeEnumerableExtensions
 {
@@ -57,7 +59,7 @@ public static class FakeEnumerableExtensions
     /// 返回一个按照依赖关系排序后的新的list，他是一个拓扑序列，
     /// 即满足如果A依赖B，则新的list中B会在A之前出现。
     /// </returns>
-    /// <exception cref="ArgumentException">如果依赖图中存在环，则抛出异常</exception>
+    /// <exception cref="FakeException">如果依赖图中存在环，则抛出异常</exception>
     public static List<T> SortByDependencies<T>(
         this IEnumerable<T> source,
         Func<T, IEnumerable<T>> getDependencies,
@@ -90,7 +92,7 @@ public static class FakeEnumerableExtensions
             // 如果已经访问过了，并且还在递归栈中，则出现了循环引用
             if (processing)
             {
-                throw new ArgumentException("Cyclic dependency found! Item: " + item);
+                throw new FakeException("发现循环依赖! 依赖项: " + item);
             }
 
             // 剪枝

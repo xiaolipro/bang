@@ -1,22 +1,13 @@
-using Microsoft.Extensions.Configuration;
-
 namespace Fake;
 
-public class FakeApplicationCreationOptions
+public class FakeApplicationCreationOptions(IServiceCollection services)
 {
-    public string ApplicationName { get; set; } = String.Empty;
+    public string ApplicationName { get; set; } = string.Empty;
 
-    public IServiceCollection Services { get; }
+    public IServiceCollection Services { get; } = ThrowHelper.ThrowIfNull(services, nameof(services));
 
     /// <summary>
-    /// 仅在未注册IConfiguration时生效
+    /// 仅当services中没有IConfiguration时，会根据此配置创建一个
     /// </summary>
-    public FakeConfigurationBuilderOptions Configuration { get; }
-
-
-    public FakeApplicationCreationOptions(IServiceCollection services)
-    {
-        Services = ThrowHelper.ThrowIfNull(services, nameof(services));
-        Configuration = new FakeConfigurationBuilderOptions();
-    }
+    public FakeConfigurationBuilderOptions Configuration { get; } = new();
 }

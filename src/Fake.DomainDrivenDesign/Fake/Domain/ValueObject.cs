@@ -5,10 +5,10 @@
 /// </summary>
 public abstract class ValueObject
 {
-    public override bool Equals(object obj)
+    public override bool Equals(object? obj)
     {
         if (obj is not ValueObject entity) return false;
-        if (this.GetType() != obj.GetType()) return false;
+        if (GetType() != obj.GetType()) return false;
 
         return GetEqualityComponents().SequenceEqual(entity.GetEqualityComponents());
     }

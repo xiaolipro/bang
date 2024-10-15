@@ -2,15 +2,15 @@ using Fake.Helpers;
 
 namespace Fake.Reflection;
 
-public class FakeAssemblyTypeScanner : ITypeScanner
+public class FakeTypeScanner : IFakeTypeScanner
 {
-    private readonly IAssemblyScanner _assemblyScanner;
+    private readonly IFakeAssemblyScanner _fakeAssemblyScanner;
 
     private readonly Lazy<IReadOnlyList<Type>> _types;
 
-    public FakeAssemblyTypeScanner(IAssemblyScanner assemblyScanner)
+    public FakeTypeScanner(IFakeAssemblyScanner fakeAssemblyScanner)
     {
-        _assemblyScanner = assemblyScanner;
+        _fakeAssemblyScanner = fakeAssemblyScanner;
 
         _types = new Lazy<IReadOnlyList<Type>>(FindAllTypes, LazyThreadSafetyMode.ExecutionAndPublication);
     }
@@ -24,7 +24,7 @@ public class FakeAssemblyTypeScanner : ITypeScanner
     {
         var allTypes = new List<Type>();
 
-        foreach (var assembly in _assemblyScanner.Scan())
+        foreach (var assembly in _fakeAssemblyScanner.Scan())
         {
             try
             {

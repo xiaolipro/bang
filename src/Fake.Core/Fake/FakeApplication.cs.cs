@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using System.IO;
 using System.Reflection;
 using System.Runtime.ExceptionServices;
 using Fake.DependencyInjection;
@@ -298,10 +299,11 @@ public class FakeApplication : IFakeApplication
     private void AddFakeCoreServices(IServiceCollection services, FakeApplicationCreationOptions creationOptions)
     {
         var configuration = services.GetInstanceOrNull<IConfiguration>();
-        // 添加配置
+        
+        // tips：当services中没有IConfiguration时，会自动创建一个
         if (configuration == null)
         {
-            configuration = FakeConfigurationHelper.BuildConfiguration(creationOptions.Configuration);
+            configuration = BuildConfiguration(creationOptions.Configuration);
             services.ReplaceConfiguration(configuration);
         }
 
@@ -311,19 +313,56 @@ public class FakeApplication : IFakeApplication
         if (services.GetInstanceOrNull<ILoggerFactory>() == null)
         {
             services.AddLogging(logging =>
-            {
-                logging.AddConfiguration(configuration.GetSection("Logging"));
-                logging.AddConsole();
-            });
+                {
+                    logging.AddConfiguration(configuration.GetSection("Logging"));
+                    logging.AddConsole();
+                });
         }
 
         var assemblyScanner = new FakeAssemblyScanner(this);
-        var typeScanner = new FakeAssemblyTypeScanner(assemblyScanner);
+        var typeScanner = new FakeTypeScanner(assemblyScanner);
 
         services.TryAddSingleton<IModuleLoader>(new FakeModuleLoader());
-        services.TryAddSingleton<IAssemblyScanner>(assemblyScanner);
-        services.TryAddSingleton<ITypeScanner>(typeScanner);
+        services.TryAddSingleton<IFakeAssemblyScanner>(assemblyScanner);
+        services.TryAddSingleton<IFakeTypeScanner>(typeScanner);
 
         services.TryAddSingleton<IInitLoggerFactory>(new DefaultInitLoggerFactory());
+    }
+
+    private static IConfigurationRoot BuildConfiguration(FakeConfigurationBuilderOptions? options = null,
+        Action<IConfigurationBuilder>? builderAction = null)
+    {
+        options ??= new FakeConfigurationBuilderOptions();
+
+        if (options.BasePath.IsNullOrEmpty())
+        {
+            options.BasePath = Directory.GetCurrentDirectory();
+        }
+
+        // 添加json文件
+        var builder = new ConfigurationBuilder()
+            .SetBasePath(options.BasePath)
+            .AddJsonFile(options.FileName + ".json", optional: options.Optional,
+                reloadOnChange: options.ReloadOnChange);
+
+        // 根据当前环境添加json文件
+        if (!options.EnvironmentName.IsNullOrEmpty())
+        {
+            builder = builder.AddJsonFile($"{options.FileName}.{options.EnvironmentName}.json",
+                optional: options.Optional, reloadOnChange: options.ReloadOnChange);
+        }
+
+        // 非开发环境不使用用户机密
+        if (options is { EnvironmentName: "Development", UserSecretsId: not null })
+        {
+            builder.AddUserSecrets(options.UserSecretsId);
+        }
+
+        // 命令行参数
+        builder = builder.AddCommandLine(options.CommandLineArgs);
+
+        builderAction?.Invoke(builder);
+
+        return builder.Build();
     }
 }

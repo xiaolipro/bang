@@ -1,29 +1,13 @@
-﻿namespace Fake.Modularity;
+﻿using Fake.Data;
 
-public class ServiceConfigurationContext
+namespace Fake.Modularity;
+
+public class ServiceConfigurationContext(IServiceCollection services) : IHasExtraProperties
 {
-    public IServiceCollection Services { get; }
-
-    public IDictionary<string, object?> Items { get; }
+    public IServiceCollection Services { get; } = ThrowHelper.ThrowIfNull(services, nameof(services));
 
     /// <summary>
-    /// Gets/sets arbitrary named objects those can be stored during
-    /// the service registration phase and shared between modules.
-    ///
-    /// This is a shortcut usage of the <see cref="Items"/> dictionary.
-    /// Returns null if given key is not found in the <see cref="Items"/> dictionary.
+    /// 用于在模块之间共享数据
     /// </summary>
-    /// <param name="key"></param>
-    /// <returns></returns>
-    public object? this[string key]
-    {
-        get => Items.GetOrDefault(key);
-        set => Items[key] = value;
-    }
-
-    public ServiceConfigurationContext(IServiceCollection services)
-    {
-        Services = ThrowHelper.ThrowIfNull(services, nameof(services));
-        Items = new Dictionary<string, object?>();
-    }
+    public ExtraPropertyDictionary ExtraProperties { get; } = new();
 }

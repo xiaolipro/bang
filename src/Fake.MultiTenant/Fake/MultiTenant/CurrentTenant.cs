@@ -5,8 +5,8 @@ namespace Fake.MultiTenant;
 
 public class CurrentTenant(IAmbientScopeProvider<TenantInfo> ambientScopeProvider) : ICurrentTenant
 {
-    private const string Key = "Fake.MultiTenant.TenantInfo";
-    private TenantInfo? Current => ambientScopeProvider.GetValue(Key);
+    private const string CurrentTenantContextKey = "Fake.MultiTenant.CurrentTenantScope";
+    private TenantInfo? Current => ambientScopeProvider.GetValue(CurrentTenantContextKey);
 
     public bool IsResolved => Id == default;
     public Guid Id => Current?.TenantId ?? default;
@@ -14,6 +14,6 @@ public class CurrentTenant(IAmbientScopeProvider<TenantInfo> ambientScopeProvide
 
     public IDisposable Change(TenantInfo tenantInfo)
     {
-        return ambientScopeProvider.BeginScope(Key, tenantInfo);
+        return ambientScopeProvider.BeginScope(CurrentTenantContextKey, tenantInfo);
     }
 }

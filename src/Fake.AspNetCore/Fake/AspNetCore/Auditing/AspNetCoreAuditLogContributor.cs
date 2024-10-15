@@ -20,12 +20,12 @@ public class AspNetCoreAuditLogContributor : AuditLogContributor
 
         if (httpContext.WebSockets.IsWebSocketRequest) return;
 
-        context.AuditInfo.AddExtraProperties(TraceIdentifier, httpContext.TraceIdentifier);
-        context.AuditInfo.AddExtraProperties(RequestSummary, BuildSummary(httpContext));
+        context.AuditInfo.AddExtraProperty(TraceIdentifier, httpContext.TraceIdentifier);
+        context.AuditInfo.AddExtraProperty(RequestSummary, BuildSummary(httpContext));
 
         var httpClientInfoProvider = context.ServiceProvider.GetRequiredService<IHttpClientInfoProvider>();
-        context.AuditInfo.AddExtraProperties(ClientIpAddress, httpClientInfoProvider.ClientIpAddress);
-        context.AuditInfo.AddExtraProperties(UserAgent, httpClientInfoProvider.UserAgent);
+        context.AuditInfo.AddExtraProperty(ClientIpAddress, httpClientInfoProvider.ClientIpAddress);
+        context.AuditInfo.AddExtraProperty(UserAgent, httpClientInfoProvider.UserAgent);
     }
 
     public override void PostContribute(AuditLogContributionContext context)

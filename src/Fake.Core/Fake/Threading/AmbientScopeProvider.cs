@@ -41,20 +41,12 @@ public class AmbientScopeProvider<T> : IAmbientScopeProvider<T>
     }
 
 
-    protected class ScopeItem
+    protected class ScopeItem(T? value, ScopeItem? outer = null)
     {
-        public string Id { get; }
+        public string Id { get; } = Guid.NewGuid().ToString();
 
-        public ScopeItem? Outer { get; }
+        public ScopeItem? Outer { get; } = outer;
 
-        public T? Value { get; }
-
-        public ScopeItem(T? value, ScopeItem? outer = null)
-        {
-            Id = Guid.NewGuid().ToString();
-
-            Value = value;
-            Outer = outer;
-        }
+        public T? Value { get; } = value;
     }
 }

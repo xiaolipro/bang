@@ -1,6 +1,6 @@
 ﻿namespace Fake.Reflection;
 
-public interface ITypeScanner
+public interface IFakeTypeScanner
 {
     IReadOnlyList<Type> Scan();
 }

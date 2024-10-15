@@ -99,7 +99,7 @@ public class RemoteServiceConvention(
                     continue;
                 }
 
-                if (!TypeHelper.IsPrimitiveExtended(prm.ParameterInfo.ParameterType, includeEnums: true))
+                if (!TypeHelper.IsBaseType(prm.ParameterInfo.ParameterType, includeEnums: true))
                 {
                     if (CanUseFormBodyBinding(action, prm))
                     {

@@ -2,7 +2,7 @@ namespace Fake.Threading;
 
 public abstract class CancellationTokenProviderBase : ICancellationTokenProvider
 {
-    public const string CancellationTokenProviderContextKey = "Fake.Threading.CancellationToken.CancellationTokenProvider";
+    public const string CancellationTokenProviderContextKey = "Fake.Threading.CancellationTokenScope";
     
     public abstract CancellationToken Token { get; }
     

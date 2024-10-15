@@ -17,23 +17,31 @@ public static class TypeHelper
         return type;
     }
 
-    public static bool IsPrimitiveExtended(Type type, bool includeNullables = true, bool includeEnums = false)
+    /// <summary>
+    /// 是否是基础类型
+    /// </summary>
+    /// <param name="type"></param>
+    /// <param name="includeNullables"></param>
+    /// <param name="includeEnums"></param>
+    /// <returns></returns>
+    public static bool IsBaseType(Type type, bool includeNullables = true, bool includeEnums = false)
     {
-        if (IsPrimitiveExtendedInternal(type, includeEnums))
+        if (IsPrimitiveExtended(type, includeEnums))
         {
             return true;
         }
 
         if (includeNullables && IsNullable(type) && type.GenericTypeArguments.Any())
         {
-            return IsPrimitiveExtendedInternal(type.GenericTypeArguments[0], includeEnums);
+            return IsPrimitiveExtended(type.GenericTypeArguments[0], includeEnums);
         }
 
         return false;
     }
 
-    private static bool IsPrimitiveExtendedInternal(Type type, bool includeEnums)
+    private static bool IsPrimitiveExtended(Type type, bool includeEnums)
     {
+        // c# primitive types：https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/builtin-types/built-in-types
         if (type.IsPrimitive)
         {
             return true;
@@ -45,7 +53,6 @@ public static class TypeHelper
         }
 
         return type == typeof(string) ||
-               type == typeof(decimal) ||
                type == typeof(DateTime) ||
                type == typeof(DateTimeOffset) ||
                type == typeof(TimeSpan) ||

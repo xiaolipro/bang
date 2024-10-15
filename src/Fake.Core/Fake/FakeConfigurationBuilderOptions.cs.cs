@@ -1,4 +1,4 @@
-namespace Microsoft.Extensions.Configuration;
+namespace Fake;
 
 public class FakeConfigurationBuilderOptions
 {
@@ -35,5 +35,5 @@ public class FakeConfigurationBuilderOptions
     /// <summary>
     /// 命令行参数
     /// </summary>
-    public string[] CommandLineArgs { get; set; } = Array.Empty<string>();
+    public string[] CommandLineArgs { get; set; } = [];
 }
