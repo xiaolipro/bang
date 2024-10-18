@@ -1,6 +1,6 @@
 ﻿namespace Fake.TenantManagement.Application.Contracts.Dtos;
 
-public class TenantDto
+public class TenantItemResponse
 {
     public Guid Id { get; set; }
 

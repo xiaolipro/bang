@@ -1,23 +1,23 @@
 using System.Collections.Concurrent;
 
-namespace Fake.Helpers.SyncEx;
+namespace Fake.SyncEx;
 
-public sealed partial class SyncWrapper : IDisposable
+public sealed partial class SyncContext : IDisposable
 {
     private readonly BlockingCollection<(Task task, bool propagateExceptions)> _queue;
-    private readonly SyncWrapperTaskScheduler _taskScheduler;
-    private readonly SyncWrapperSynchronizationContext _synchronizationContext;
+    private readonly SyncContextTaskScheduler _taskScheduler;
+    private readonly SyncContextSynchronizationContext _synchronizationContext;
     private readonly TaskFactory _taskFactory;
     private int _pendingNum;
 
-    private static SyncWrapper? Current =>
-        (SynchronizationContext.Current as SyncWrapperSynchronizationContext)?.Wrapper;
+    private static SyncContext? Current =>
+        (SynchronizationContext.Current as SyncContextSynchronizationContext)?.Context;
 
-    private SyncWrapper()
+    private SyncContext()
     {
         _queue = new BlockingCollection<(Task task, bool propagateExceptions)>();
-        _taskScheduler = new SyncWrapperTaskScheduler(this);
-        _synchronizationContext = new SyncWrapperSynchronizationContext(this);
+        _taskScheduler = new SyncContextTaskScheduler(this);
+        _synchronizationContext = new SyncContextSynchronizationContext(this);
         _taskFactory = new TaskFactory(CancellationToken.None, TaskCreationOptions.HideScheduler,
             TaskContinuationOptions.HideScheduler | TaskContinuationOptions.DenyChildAttach, _taskScheduler);
     }
@@ -55,7 +55,7 @@ public sealed partial class SyncWrapper : IDisposable
     }
 
     /// <summary>
-    /// Decrements the outstanding asynchronous operation count.
+    /// 维护 <see cref="_pendingNum"/> 的值
     /// </summary>
     private void OperationCompleted()
     {
@@ -69,7 +69,7 @@ public sealed partial class SyncWrapper : IDisposable
         if (func == null)
             throw new ArgumentNullException(nameof(func));
 
-        using var wrapper = new SyncWrapper();
+        using var wrapper = new SyncContext();
         wrapper.OperationStarted();
         var task = wrapper._taskFactory.StartNew(func).ContinueWith(t =>
             {
@@ -88,7 +88,7 @@ public sealed partial class SyncWrapper : IDisposable
             throw new ArgumentNullException(nameof(func));
         }
 
-        using var wrapper = new SyncWrapper();
+        using var wrapper = new SyncContext();
         wrapper.OperationStarted();
         var task = wrapper._taskFactory.StartNew(func).Unwrap().ContinueWith(t =>
             {

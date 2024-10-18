@@ -1,6 +1,7 @@
 ﻿using Fake.Autofac;
 using Fake.Helpers;
 using Fake.Modularity;
+using Fake.SyncEx;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -44,7 +45,7 @@ public class FakeEntityFrameworkCoreIntegrationEventLogTestModule : FakeModule
 
         using (ctx)
         {
-            AsyncHelper.RunSync(async () =>
+            SyncContext.Run(async () =>
             {
                 await ctx.Database.EnsureCreatedAsync();
                 await ctx.Database.MigrateAsync();

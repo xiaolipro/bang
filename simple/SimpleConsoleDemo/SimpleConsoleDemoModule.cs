@@ -16,4 +16,8 @@ public class SimpleConsoleDemoModule : FakeModule
             // options.IsEnabledExceptionLog = false;
         });
     }
+
+    public override void ConfigureApplication(ApplicationConfigureContext context)
+    {
+    }
 }

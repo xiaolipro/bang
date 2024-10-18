@@ -156,8 +156,8 @@ public class EntityChangeHelper(
         if (propertyInfo == null) return false;
         if (propertyInfo.IsDefined(typeof(DisableAuditingAttribute), true)) return false;
 
-        if (propertyEntry.OriginalValue is ExtraPropertyDictionary originalValue &&
-            propertyEntry.CurrentValue is ExtraPropertyDictionary currentValue)
+        if (propertyEntry.OriginalValue is ExtraProperties originalValue &&
+            propertyEntry.CurrentValue is ExtraProperties currentValue)
         {
             if (originalValue.IsNullOrEmpty() && currentValue.IsNullOrEmpty()) return false;
             if (!originalValue.Select(x => x.Key).SequenceEqual(currentValue.Select(x => x.Key))) return true;

@@ -5,6 +5,7 @@ using Fake.DomainDrivenDesign.Repositories.EntityFrameWorkCore;
 using Fake.EntityFrameworkCore.Tests.Repositories;
 using Fake.Helpers;
 using Fake.Modularity;
+using Fake.SyncEx;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -53,7 +54,7 @@ public class FakeEntityFrameworkCoreTestModule : FakeModule
 
         using (orderingContext)
         {
-            AsyncHelper.RunSync(() => SeedAsync(orderingContext));
+            SyncContext.Run(() => SeedAsync(orderingContext));
         }
     }
 

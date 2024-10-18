@@ -14,5 +14,5 @@ public class InitLoggerEntry
 
     public Func<object, Exception?, string> Formatter { get; set; } = (_, _) => string.Empty;
 
-    public string Message => Formatter(State ?? new(), Exception);
+    public string Message => Formatter(State ?? new object(), Exception);
 }

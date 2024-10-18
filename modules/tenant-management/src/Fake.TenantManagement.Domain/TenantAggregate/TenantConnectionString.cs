@@ -9,6 +9,8 @@ public class TenantConnectionString : Entity
     public string Name { get; private set; } = null!;
 
     public string Value { get; private set; } = null!;
+    public static int MaxNameLength { get; set; } = 64;
+    public static int MaxValueLength { get; set; } = 1024;
 
     public TenantConnectionString(Guid tenantId, string name, string value)
     {

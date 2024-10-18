@@ -8,9 +8,21 @@
     
     <ItemGroup>
         <ProjectReference Include="..\..\..\..\src\Fake.AspNetCore\Fake.AspNetCore.csproj"/>
-        <ProjectReference Include="..\..\..\..\tests\Fake.ObjectMapping.AutoMapper.Tests\Fake.ObjectMapping.AutoMapper.Tests.csproj"/>
-        <ProjectReference Include="..\Fake.TenantManagement.Contracts\Fake.TenantManagement.Contracts.csproj"/>
+        <ProjectReference Include="..\..\..\..\src\Fake.Autofac\Fake.Autofac.csproj" />
+        <ProjectReference Include="..\..\..\..\src\Fake.ObjectMapping.AutoMapper\Fake.ObjectMapping.AutoMapper.csproj" />
+        <ProjectReference Include="..\Fake.TenantManagement.Application.Contracts\Fake.TenantManagement.Application.Contracts.csproj" />
         <ProjectReference Include="..\Fake.TenantManagement.Domain\Fake.TenantManagement.Domain.csproj"/>
+        <PackageReference Include="Serilog.AspNetCore" Version="8.0.1"/>
+        <PackageReference Include="Serilog.Sinks.Async" Version="2.0.0"/>
+        <PackageReference Include="Serilog.Sinks.Console" Version="5.0.1"/>
+    </ItemGroup>
+    
+    <ItemGroup>
+      <Content Update="appsettings.json">
+        <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      </Content>
     </ItemGroup>
 
 </Project>

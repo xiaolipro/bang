@@ -164,7 +164,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fake.TenantManagement.Domai
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fake.Caching", "src\Fake.Caching\Fake.Caching.csproj", "{9C794616-F57B-40CD-84B1-88913613C52B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fake.TenantManagement.Contracts", "modules\tenant-management\src\Fake.TenantManagement.Contracts\Fake.TenantManagement.Contracts.csproj", "{87DB3B7E-0722-4602-899B-18B9391D67D3}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fake.TenantManagement.Application.Contracts", "modules\tenant-management\src\Fake.TenantManagement.Application.Contracts\Fake.TenantManagement.Application.Contracts.csproj", "{87DB3B7E-0722-4602-899B-18B9391D67D3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fake.TenantManagement.Infrastructure", "modules\tenant-management\src\Fake.TenantManagement.Infrastructure\Fake.TenantManagement.Infrastructure.csproj", "{1513CC1F-F7EF-4231-A6FF-ACC760BC3BB6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -382,6 +384,10 @@ Global
 		{87DB3B7E-0722-4602-899B-18B9391D67D3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{87DB3B7E-0722-4602-899B-18B9391D67D3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{87DB3B7E-0722-4602-899B-18B9391D67D3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1513CC1F-F7EF-4231-A6FF-ACC760BC3BB6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1513CC1F-F7EF-4231-A6FF-ACC760BC3BB6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1513CC1F-F7EF-4231-A6FF-ACC760BC3BB6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1513CC1F-F7EF-4231-A6FF-ACC760BC3BB6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{A93D4EAE-90BE-4C9B-9970-5C1C8E1B994D} = {310D0E30-AC20-44C8-B0A2-155C880ED934}
@@ -449,5 +455,6 @@ Global
 		{282005EC-2983-421A-B540-1C580EBEB6B8} = {26FBB3A0-80DA-4577-A0B5-13843D82626C}
 		{9C794616-F57B-40CD-84B1-88913613C52B} = {242B5161-9E38-4BBD-9AA7-A85831F60533}
 		{87DB3B7E-0722-4602-899B-18B9391D67D3} = {26FBB3A0-80DA-4577-A0B5-13843D82626C}
+		{1513CC1F-F7EF-4231-A6FF-ACC760BC3BB6} = {26FBB3A0-80DA-4577-A0B5-13843D82626C}
 	EndGlobalSection
 EndGlobal

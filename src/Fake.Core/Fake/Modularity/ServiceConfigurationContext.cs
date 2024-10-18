@@ -9,5 +9,5 @@ public class ServiceConfigurationContext(IServiceCollection services) : IHasExtr
     /// <summary>
     /// 用于在模块之间共享数据
     /// </summary>
-    public ExtraPropertyDictionary ExtraProperties { get; } = new();
+    public ExtraProperties ExtraProperties { get; } = new();
 }

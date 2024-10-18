@@ -1,11 +1,11 @@
 ﻿namespace Fake.EntityFrameworkCore.ValueCompares;
 
-public class ExtraPropertyDictionaryValueComparer() : ValueComparer<ExtraPropertyDictionary>(
+public class ExtraPropertiesValueComparer() : ValueComparer<ExtraProperties>(
     (d1, d2) => Compare(d1, d2),
     d => d.Aggregate(0, (k, v) => HashCode.Combine(k, v.GetHashCode())),
-    d => new ExtraPropertyDictionary(d))
+    d => new ExtraProperties(d))
 {
-    private static bool Compare(ExtraPropertyDictionary? a, ExtraPropertyDictionary? b)
+    private static bool Compare(ExtraProperties? a, ExtraProperties? b)
     {
         if (ReferenceEquals(a, b))
         {
@@ -16,7 +16,12 @@ public class ExtraPropertyDictionaryValueComparer() : ValueComparer<ExtraPropert
         {
             return b is null;
         }
+        
+        if (b is null)
+        {
+            return false;
+        }
 
-        return b is not null && a.SequenceEqual(b);
+        return a.SequenceEqual(b);
     }
 }

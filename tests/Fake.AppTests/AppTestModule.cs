@@ -6,6 +6,7 @@ using Fake.DomainDrivenDesign;
 using Fake.EventBus;
 using Fake.Helpers;
 using Fake.Modularity;
+using Fake.SyncEx;
 
 [DependsOn(typeof(FakeAutofacModule))]
 [DependsOn(typeof(FakeDomainDrivenDesignModule))]
@@ -24,6 +25,6 @@ public class FakeAppTestModule : FakeModule
 
     public override void ConfigureApplication(ApplicationConfigureContext context)
     {
-        AsyncHelper.RunSync(() => context.ServiceProvider.GetRequiredService<AppTestDataBuilder>().BuildAsync());
+        SyncContext.Run(() => context.ServiceProvider.GetRequiredService<AppTestDataBuilder>().BuildAsync());
     }
 }

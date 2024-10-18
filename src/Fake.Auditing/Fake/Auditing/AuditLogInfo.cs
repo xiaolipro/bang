@@ -25,7 +25,7 @@ public class AuditLogInfo : IHasExtraProperties
 
     public List<EntityChangeInfo> EntityChanges { get; set; } = [];
 
-    public ExtraPropertyDictionary ExtraProperties { get; } = new();
+    public ExtraProperties ExtraProperties { get; } = new();
 
     public override string ToString()
     {

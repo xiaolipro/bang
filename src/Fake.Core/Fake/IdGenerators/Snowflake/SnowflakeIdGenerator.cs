@@ -1,4 +1,5 @@
 ﻿using Fake.Helpers;
+using Fake.SyncEx;
 using Microsoft.Extensions.Options;
 
 namespace Fake.IdGenerators.Snowflake;
@@ -18,7 +19,7 @@ public class SnowflakeIdGenerator : LongIdGeneratorBase
     public SnowflakeIdGenerator(IOptions<SnowflakeIdGeneratorOptions> options, IWorkerProvider workerProvider)
     {
         _options = options.Value;
-        _workerId = AsyncHelper.RunSync(workerProvider.GetWorkerIdAsync);
+        _workerId = SyncContext.Run(workerProvider.GetWorkerIdAsync);
         _sequenceMask = ~(-1 << _options.SequenceBits);
         _startTimestamp = new DateTimeOffset(_options.StartTime).ToTimestamp(_options.TimestampType);
         if (_workerId > _options.MaxWorkerId || _workerId < 0)

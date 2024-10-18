@@ -2,6 +2,7 @@
 using Fake.AspNetCore.Mvc.Conventions;
 using Fake.Modularity;
 using Fake.ObjectMapping.AutoMapper;
+using Fake.TenantManagement.Domain;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -9,6 +10,7 @@ namespace Fake.TenantManagement.Application;
 
 [DependsOn(typeof(FakeObjectMappingAutoMapperModule))]
 [DependsOn(typeof(FakeAspNetCoreModule))]
+[DependsOn(typeof(FakeTenantManagementDomainModule))]
 public class FakeTenantManagementApplicationModule : FakeModule
 {
     public override void ConfigureServices(ServiceConfigurationContext context)
@@ -28,11 +30,6 @@ public class FakeTenantManagementApplicationModule : FakeModule
 
     public override void ConfigureApplication(ApplicationConfigureContext context)
     {
-        var app = context.GetWebApplication();
-        app.UseStaticFiles();
-        app.UseRouting();
-        app.UseFakeSwagger();
-
-        app.MapControllers();
+       
     }
 }

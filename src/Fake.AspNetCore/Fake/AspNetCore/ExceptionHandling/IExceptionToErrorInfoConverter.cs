@@ -29,7 +29,8 @@ public class DefaultExceptionToErrorInfoConverter : IExceptionToErrorInfoConvert
         return errorInfo;
     }
 
-    private void LocalizeFakeException(Exception exception, ApplicationServiceErrorInfo errorInfo)
+    private void 
+        LocalizeFakeException(Exception exception, ApplicationServiceErrorInfo errorInfo)
     {
         throw new NotImplementedException();
     }

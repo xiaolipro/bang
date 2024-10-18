@@ -3,19 +3,19 @@
 public interface IHasExtraProperties
 {
     /// <summary>
-    /// 额外属性
+    /// 拓展属性
     /// </summary>
-    ExtraPropertyDictionary ExtraProperties { get; }
+    ExtraProperties ExtraProperties { get; }
 }
 
 [Serializable]
-public class ExtraPropertyDictionary : Dictionary<string, object?>
+public class ExtraProperties : Dictionary<string, object?>
 {
-    public ExtraPropertyDictionary()
+    public ExtraProperties()
     {
     }
 
-    public ExtraPropertyDictionary(IDictionary<string, object?> dictionary)
+    public ExtraProperties(IDictionary<string, object?> dictionary)
         : base(dictionary)
     {
     }

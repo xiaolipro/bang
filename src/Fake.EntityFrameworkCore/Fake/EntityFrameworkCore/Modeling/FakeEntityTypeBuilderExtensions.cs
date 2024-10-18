@@ -6,6 +6,15 @@ namespace Fake.EntityFrameworkCore.Modeling;
 
 public static class FakeEntityTypeBuilderExtensions
 {
+    public static EntityTypeBuilder TryConfigureByConvention(this EntityTypeBuilder builder)
+    {
+        return builder.TryConfigureCreator()
+            .TryConfigureModifier()
+            .TryConfigureSoftDelete()
+            .TryConfigureExtraProperties()
+            .TryConfigureConcurrencyStamp();
+    }
+
     public static EntityTypeBuilder TryConfigureConcurrencyStamp(this EntityTypeBuilder builder)
     {
         if (builder.Metadata.ClrType.IsAssignableTo<IAggregateRoot>())
@@ -29,8 +38,8 @@ public static class FakeEntityTypeBuilderExtensions
 
         builder.Property(nameof(IHasExtraProperties.ExtraProperties))
             .HasColumnName(nameof(IHasExtraProperties.ExtraProperties))
-            .HasConversion(new FakeJsonValueConverter<ExtraPropertyDictionary>())
-            .Metadata.SetValueComparer(new ExtraPropertyDictionaryValueComparer());
+            .HasConversion(new FakeJsonValueConverter<ExtraProperties>())
+            .Metadata.SetValueComparer(new ExtraPropertiesValueComparer());
 
         return builder;
     }

@@ -1,8 +1,8 @@
-namespace Fake.Helpers.SyncEx;
+namespace Fake.SyncEx;
 
-public sealed partial class SyncWrapper
+public sealed partial class SyncContext
 {
-    private sealed class SyncWrapperTaskScheduler(SyncWrapper context) : TaskScheduler
+    private sealed class SyncContextTaskScheduler(SyncContext context) : TaskScheduler
     {
         protected override IEnumerable<Task> GetScheduledTasks()
         {
@@ -16,7 +16,7 @@ public sealed partial class SyncWrapper
 
         protected override bool TryExecuteTaskInline(Task task, bool taskWasPreviouslyQueued)
         {
-            return SyncWrapper.Current == context && TryExecuteTask(task);
+            return SyncContext.Current == context && TryExecuteTask(task);
         }
 
 
