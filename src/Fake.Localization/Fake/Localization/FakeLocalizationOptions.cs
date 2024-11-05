@@ -15,6 +15,11 @@ public class FakeLocalizationOptions
     /// 默认资源类型
     /// </summary>
     public Type? DefaultResourceType { get; set; }
+    
+    /// <summary>
+    /// 默认异常资源类型
+    /// </summary>
+    public Type? DefaultErrorResourceType { get; set; }
 
     /// <summary>
     /// 本地化贡献者（倒序）

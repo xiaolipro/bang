@@ -11,9 +11,11 @@ public class CurrentUser(ICurrentPrincipalAccessor currentPrincipalAccessor) : I
      * see: public virtual bool IsAuthenticated => !string.IsNullOrEmpty(this.m_authenticationType);
      */
     public virtual bool IsAuthenticated => currentPrincipalAccessor.Principal?.Identity.IsAuthenticated ?? false;
-    public virtual Guid Id => currentPrincipalAccessor.Principal?.FindUserId() ?? default;
-    public virtual string UserName => this.FindClaimValueOrNull(ClaimTypes.Name) ?? string.Empty;
-    public virtual string[] Roles => this.FindClaimValues(ClaimTypes.Role);
+    public virtual Guid? Id => currentPrincipalAccessor.Principal?.FindUserId();
+    public Guid? TenantId => currentPrincipalAccessor.Principal?.FindTenantId();
+    public virtual string? UserName => this.FindClaimValueOrNull(FakeClaimTypes.UserName);
+    public string? Email=> this.FindClaimValueOrNull(FakeClaimTypes.Email);
+    public virtual string[] Roles => this.FindClaimValues(FakeClaimTypes.Role);
 
     public virtual Claim? FindClaimOrNull(string claimType)
     {

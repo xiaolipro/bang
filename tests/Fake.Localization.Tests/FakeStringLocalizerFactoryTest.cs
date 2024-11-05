@@ -28,7 +28,6 @@ public sealed class FakeStringLocalizerFactoryTest : ApplicationTest<FakeLocaliz
     public void 可以实现本地化()
     {
         var localizer = _localizerFactory.Create(typeof(LocalizationTestResource));
-
         localizer["Hi"].Value.ShouldBe("你好");
     }
 

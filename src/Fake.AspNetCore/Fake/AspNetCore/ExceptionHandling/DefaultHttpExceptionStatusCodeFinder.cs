@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using System.Net;
+using Fake.Application;
 using Fake.Authorization;
 using Fake.Data;
 using Fake.Domain.Exceptions;
@@ -8,7 +9,7 @@ using Microsoft.AspNetCore.Http;
 namespace Fake.AspNetCore.ExceptionHandling;
 
 /// <summary>
-/// default exception http codes: 400 401 403 409 500
+/// default exception http codes: 400 401 403 500
 /// </summary>
 public class DefaultHttpExceptionStatusCodeFinder : IHttpExceptionStatusCodeFinder
 {
@@ -22,12 +23,7 @@ public class DefaultHttpExceptionStatusCodeFinder : IHttpExceptionStatusCodeFind
                 : HttpStatusCode.Unauthorized;
         }
 
-        if (exception is FakeDbConcurrencyException)
-        {
-            return HttpStatusCode.Conflict;
-        }
-
-        if (exception is DomainException or ValidationException) return HttpStatusCode.BadRequest;
+        if (exception is DomainException or ValidationException or BusinessException) return HttpStatusCode.BadRequest;
 
         return HttpStatusCode.InternalServerError;
     }

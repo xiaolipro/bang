@@ -339,6 +339,7 @@ public class FakeApplication : IFakeApplication
             options.BasePath = Directory.GetCurrentDirectory();
         }
 
+        // tips：记得改文件的properties->content/copy if newer
         // 添加json文件
         var builder = new ConfigurationBuilder()
             .SetBasePath(options.BasePath)

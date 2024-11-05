@@ -25,7 +25,35 @@ public static class FakeQueryableExtensions
             ? (TQueryable)query.Where(predicate)
             : query;
     }
+    
+    /// <summary>
+    /// 分页<see cref="IQueryable{T}"/>
+    /// </summary>
+    /// <param name="query"></param>
+    /// <param name="pageIndex"></param>
+    /// <param name="pageSize"></param>
+    /// <typeparam name="TEntity"></typeparam>
+    /// <returns></returns>
+    public static IQueryable<TEntity> PageBy<TEntity>(
+        this IQueryable<TEntity> query,
+        int pageIndex,
+        int pageSize)
+        where TEntity : class
+    {
+        pageIndex = pageIndex < 1 ? 1 : pageIndex;
+        pageSize = pageSize < 1 ? 1 : pageSize;
 
+        return query.Skip((pageIndex - 1) * pageSize)
+            .Take(pageSize);
+    }
+
+    /// <summary>
+    /// 根据<paramref name="fields"/>排序<see cref="IQueryable{T}"/>
+    /// </summary>
+    /// <param name="query"></param>
+    /// <param name="fields"></param>
+    /// <typeparam name="TEntity"></typeparam>
+    /// <returns></returns>
     public static IQueryable<TEntity> OrderBy<TEntity>(
         this IQueryable<TEntity> query,
         Dictionary<string, bool>? fields)
@@ -43,32 +71,40 @@ public static class FakeQueryableExtensions
         return query;
     }
 
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="query"></param>
+    /// <param name="field"></param>
+    /// <param name="desc"></param>
+    /// <typeparam name="TEntity"></typeparam>
+    /// <returns></returns>
+    /// <exception cref="FakeException"></exception>
     public static IQueryable<TEntity> OrderBy<TEntity>(
         this IQueryable<TEntity> query,
         string field,
-        bool desc)
+        bool desc = false)
         where TEntity : class
     {
-        PropertyInfo propertyInfo = GetPropertyInfo(typeof(TEntity), field)
-                                    ?? throw new FakeException($"{typeof(TEntity).Name}中找不到字段：{field}");
-        LambdaExpression orderExpression = GetOrderExpression(typeof(TEntity), propertyInfo);
+        // todo：缓存
+        var propertyInfo = GetPropertyInfo(typeof(TEntity), field)
+                           ?? throw new FakeException($"{typeof(TEntity).Name}中找不到字段：{field}");
+        var orderExpression = GetOrderExpression(typeof(TEntity), propertyInfo);
         return (desc
             ? typeof(Queryable).GetMethods()
                 .FirstOrDefault(m =>
                     m.Name == "OrderByDescending" && m.GetParameters().Length == 2)
-                ?.MakeGenericMethod(typeof(TEntity), propertyInfo.PropertyType).Invoke(null, new object[]
-                {
+                ?.MakeGenericMethod(typeof(TEntity), propertyInfo.PropertyType).Invoke(null, [
                     query,
                     orderExpression
-                }) as IQueryable<TEntity>
+                ]) as IQueryable<TEntity>
             : (IQueryable<TEntity>?)typeof(Queryable).GetMethods()
                 .FirstOrDefault(m =>
                     m.Name == nameof(OrderBy) && m.GetParameters().Length == 2)
-                ?.MakeGenericMethod(typeof(TEntity), propertyInfo.PropertyType).Invoke(null, new object[]
-                {
+                ?.MakeGenericMethod(typeof(TEntity), propertyInfo.PropertyType).Invoke(null, [
                     query,
                     orderExpression
-                })) ?? query;
+                ])) ?? query;
     }
 
     private static IQueryable<TEntity> ThenBy<TEntity>(

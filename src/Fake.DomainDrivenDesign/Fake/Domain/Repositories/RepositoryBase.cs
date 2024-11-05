@@ -38,7 +38,7 @@ public abstract class RepositoryBase<TEntity> : IRepository<TEntity>
     {
         var res = await FirstOrDefaultAsync(predicate, cancellationToken);
         if (res == default) throw new EntityNotFoundException(typeof(TEntity));
-        return res!;
+        return res;
     }
 
     public abstract Task<TEntity?> FirstOrDefaultAsync(
@@ -57,7 +57,7 @@ public abstract class RepositoryBase<TEntity> : IRepository<TEntity>
         Dictionary<string, bool>? sorting = null,
         CancellationToken cancellationToken = default);
 
-    public abstract Task<long> GetCountAsync(Expression<Func<TEntity, bool>>? predicate = null,
+    public abstract Task<long> CountAsync(Expression<Func<TEntity, bool>>? predicate = null,
         CancellationToken cancellationToken = default);
 
     public abstract Task<bool> AnyAsync(Expression<Func<TEntity, bool>>? predicate = null,

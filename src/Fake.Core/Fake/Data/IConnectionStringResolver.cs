@@ -9,9 +9,11 @@ public interface IConnectionStringResolver
 
 public class DefaultConnectionStringResolver(IConfiguration configuration) : IConnectionStringResolver
 {
-    public Task<string> ResolveAsync(string connectionStringName)
+    public virtual Task<string> ResolveAsync(string connectionStringName)
     {
         if (connectionStringName == null) throw new ArgumentNullException(nameof(connectionStringName));
+        
+        // 从配置文件ConnectionStrings中获取连接字符串
         var connectionString = configuration.GetConnectionString(connectionStringName);
 
         return Task.FromResult(connectionString!);

@@ -32,7 +32,7 @@ public abstract class RootlessRepositoryTests<TStartupModule> : AppTestBase<TSta
     [Fact]
     async Task 无根仓储中写入会抛出异常()
     {
-        var cnt = await _orderRepository.GetCountAsync();
+        var cnt = await _orderRepository.CountAsync();
         cnt.ShouldBe(1);
 
         var street = "fakeStreet";
@@ -54,7 +54,7 @@ public abstract class RootlessRepositoryTests<TStartupModule> : AppTestBase<TSta
         {
             await _orderQueries.AddAsync(order);
 
-            cnt = await _orderRepository.GetCountAsync();
+            cnt = await _orderRepository.CountAsync();
             cnt.ShouldBe(2);
         });
     }

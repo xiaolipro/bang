@@ -31,7 +31,7 @@ public interface IRepository<TEntity> : IRepository where TEntity : class, IAggr
         Dictionary<string, bool>? sorting = null,
         CancellationToken cancellationToken = default);
 
-    Task<long> GetCountAsync(
+    Task<long> CountAsync(
         Expression<Func<TEntity, bool>>? predicate = null,
         CancellationToken cancellationToken = default);
 
@@ -51,11 +51,4 @@ public interface IRepository<TEntity> : IRepository where TEntity : class, IAggr
     Task DeleteRangeAsync(IEnumerable<TEntity> entities, CancellationToken cancellationToken = default);
 
     Task DeleteAsync(Expression<Func<TEntity, bool>> predicate, CancellationToken cancellationToken = default);
-}
-
-public interface IRepository<TEntity, in TKey> : IRepository<TEntity> where TEntity : class, IAggregateRoot
-{
-    Task<TEntity> FirstAsync(TKey id, CancellationToken cancellationToken = default);
-
-    Task<TEntity?> FirstOrDefaultAsync(TKey id, CancellationToken cancellationToken = default);
 }

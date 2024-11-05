@@ -7,5 +7,10 @@
     </PropertyGroup>
     <ItemGroup>
         <ProjectReference Include="..\Fake.Core\Fake.Core.csproj"/>
+        <ProjectReference Include="..\Fake.Security\Fake.Security.csproj" />
+    </ItemGroup>
+    <ItemGroup>
+      <EmbeddedResource Include="Fake\MultiTenant\Localization\en.json" />
+      <EmbeddedResource Include="Fake\MultiTenant\Localization\zh.json" />
     </ItemGroup>
 </Project>

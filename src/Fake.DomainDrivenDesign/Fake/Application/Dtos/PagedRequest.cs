@@ -18,5 +18,5 @@ public class PagedRequest
     /// <summary>
     /// 排序
     /// </summary>
-    public string? Sort { get; set; }
+    public Dictionary<string, bool>? SortFields { get; set; }
 }

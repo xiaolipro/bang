@@ -9,7 +9,7 @@ public class TenantConnectionStringEntityTypeConfiguration: IEntityTypeConfigura
 {
     public void Configure(EntityTypeBuilder<TenantConnectionString> builder)
     {
-        builder.ToTable("tenant_connectionStrings", TenantManagementDbContext.DefaultSchema);
+        builder.ToTable("tenant_connectionString", TenantManagementDbContext.DefaultSchema);
 
         builder.TryConfigureByConvention();
 

@@ -3,13 +3,15 @@ using System.Reflection;
 using Fake.Authorization.Localization;
 using Fake.DynamicProxy;
 using Fake.Security.Claims;
+using Microsoft.Extensions.Localization;
 
 namespace Fake.Authorization;
 
 public class AuthorizationInterceptor(
     ICurrentPrincipalAccessor currentPrincipalAccessor,
     IAuthorizationService authorizationService,
-    IAuthorizationPolicyProvider authorizationPolicyProvider) : IFakeInterceptor
+    IAuthorizationPolicyProvider authorizationPolicyProvider,
+    IStringLocalizer<FakeAuthorizationResource> localizer) : IFakeInterceptor
 {
     public virtual async Task InterceptAsync(IFakeMethodInvocation invocation)
     {
@@ -37,7 +39,7 @@ public class AuthorizationInterceptor(
 
         if (!res.Succeeded)
         {
-            throw new FakeAuthorizationException(code: FakeAuthorizationResource.GivenPolicyHasNotGranted);
+            throw new FakeAuthorizationException(localizer[FakeAuthorizationResource.GivenPolicyHasNotGranted]);
         }
     }
 

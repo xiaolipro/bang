@@ -1,0 +1,12 @@
+{
+  "culture": "en",
+  "texts": {
+    "400": "Bussiness Error",
+    "401": "Unauthorized",
+    "403": "Forbidden",
+    "404": "Page not found",
+    "409": "The data you have submitted has already been changed by another user. Discard your changes and try again.",
+    "500": "Internal Server Error",
+    "ValidationError": "Validation Error"
+  }
+}

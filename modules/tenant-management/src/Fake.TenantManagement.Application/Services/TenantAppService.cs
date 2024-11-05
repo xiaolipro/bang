@@ -1,8 +1,8 @@
-﻿using Fake.Application.Dtos;
+﻿using System.Linq.Expressions;
+using Fake.Application.Dtos;
 using Fake.Domain.Exceptions;
 using Fake.TenantManagement.Application.Contracts.Dtos;
 using Fake.TenantManagement.Application.Contracts.Services;
-using Fake.TenantManagement.Domain.Dtos;
 using Fake.TenantManagement.Domain.Localization;
 using Fake.TenantManagement.Domain.Services;
 using Fake.TenantManagement.Domain.TenantAggregate;
@@ -12,29 +12,30 @@ namespace Fake.TenantManagement.Application.Services;
 public class TenantAppService(ITenantRepository tenantRepository, TenantManager tenantManager)
     : TenantManagementAppServiceBase, ITenantAppService
 {
-    public async Task<TenantItemResponse> GetAsync(Guid id)
+    public async Task<TenantPaginatedItem> GetAsync(Guid id)
     {
-        var tenant = await tenantRepository.FirstOrDefaultAsync(id);
+        var existedTenant = await tenantRepository.FirstOrDefaultAsync(x => x.Id == id);
 
-        if (tenant == null) throw new DomainException(L[FakeTenantManagementResource.TenantNotExists, id]);
+        if (existedTenant == null) throw new DomainException(L[FakeTenantManagementResource.TenantNotExists, id]);
 
-        return ObjectMapper.Map<Tenant, TenantItemResponse>(tenant);
+        return ObjectMapper.Map<Tenant, TenantPaginatedItem>(existedTenant);
     }
 
-    public async Task<PagedResult<TenantItemResponse>> GetPagedListAsync(GetTenantPagedRequest input)
+    public async Task<PaginatedResult<TenantPaginatedItem>> GetPagedListAsync(GetTenantPaginatedRequest input)
     {
-        var query = ObjectMapper.Map<GetTenantPagedRequest, GetTenantPagedQuery>(input);
-        var res = await tenantRepository.GetPagedListAsync(query);
+        Expression<Func<Tenant, bool>> query = x => input.Name.IsNullOrWhiteSpace() ? default : x.Name.Contains(x.Name);
+        var paginatedList = await tenantRepository.GetPaginatedListAsync(query);
+        var totalCount = await tenantRepository.CountAsync(query);
 
-        return new PagedResult<TenantItemResponse>(
-            res.TotalCount,
-            ObjectMapper.Map<IReadOnlyList<Tenant>, IReadOnlyList<TenantItemResponse>>(res.Items)
+        return new PaginatedResult<TenantPaginatedItem>(
+            totalCount,
+            ObjectMapper.Map<IReadOnlyList<Tenant>, IReadOnlyList<TenantPaginatedItem>>(paginatedList)
         );
     }
 
-    public async Task<string> GetDefaultConnectionStringAsync(Guid id)
+    public async Task<string?> GetDefaultConnectionStringAsync(Guid id)
     {
-        var tenant = await tenantRepository.FirstAsync(id);
+        var tenant = await tenantRepository.FirstAsync(x => x.Id == id);
 
         return tenant.GetDefaultConnectionString();
     }

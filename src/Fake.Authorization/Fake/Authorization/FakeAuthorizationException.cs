@@ -14,13 +14,9 @@ public class FakeAuthorizationException : FakeException
         : base(message)
     {
     }
+    
 
     public FakeAuthorizationException(string? message, Exception? innerException)
-        : base(message, innerException)
-    {
-    }
-
-    public FakeAuthorizationException(string? message = null, string? code = null, Exception? innerException = null)
         : base(message, innerException)
     {
     }

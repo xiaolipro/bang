@@ -46,7 +46,7 @@ public class FakeExceptionHandlingMiddleware(ILogger<FakeExceptionHandlingMiddle
         else
         {
             var statusCodeFinder = httpContext.RequestServices.GetRequiredService<IHttpExceptionStatusCodeFinder>();
-            var errorInfoConverter = httpContext.RequestServices.GetRequiredService<IExceptionToErrorInfoConverter>();
+            var errorInfoConverter = httpContext.RequestServices.GetRequiredService<IException2ErrorInfoConverter>();
             var exceptionHandlingOptions = httpContext.RequestServices
                 .GetRequiredService<IOptions<FakeExceptionHandlingOptions>>().Value;
             var jsonSerializer = httpContext.RequestServices.GetRequiredService<IFakeJsonSerializer>();

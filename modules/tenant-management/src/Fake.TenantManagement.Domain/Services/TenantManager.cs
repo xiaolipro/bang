@@ -13,9 +13,9 @@ public class TenantManager(ITenantRepository tenantRepository, ILocalEventBus lo
     {
         ArgumentNullException.ThrowIfNull(name, nameof(name));
 
-        var tenant = await tenantRepository.FindByNameAsync(name);
+        var existedTenant = await tenantRepository.FirstOrDefaultAsync(x => x.Name == name);
 
-        if (tenant != null)
+        if (existedTenant != null)
         {
             throw new DomainException(L[FakeTenantManagementResource.TenantNameDuplicate, name]);
         }
@@ -28,7 +28,7 @@ public class TenantManager(ITenantRepository tenantRepository, ILocalEventBus lo
         ArgumentNullException.ThrowIfNull(tenant, nameof(tenant));
         ArgumentNullException.ThrowIfNull(name, nameof(name));
 
-        var existedTenant = await tenantRepository.FindByNameAsync(name);
+        var existedTenant = await tenantRepository.FirstOrDefaultAsync(x => x.Name == name);;
 
         if (existedTenant != null && existedTenant.Id != tenant.Id)
         {

@@ -121,12 +121,11 @@ public class EfCoreRepository<TDbContext, TEntity> : RepositoryBase<TEntity>,
         return await query
             .WhereIf(predicate != null, predicate)
             .OrderBy(sorting)
-            .Skip(((pageIndex < 1 ? 1 : pageIndex) - 1) * pageSize)
-            .Take(pageSize)
+            .PageBy(pageIndex, pageSize)
             .ToListAsync(cancellationToken);
     }
 
-    public override async Task<long> GetCountAsync(
+    public override async Task<long> CountAsync(
         Expression<Func<TEntity, bool>>? predicate = null,
         CancellationToken cancellationToken = default)
     {

@@ -1,11 +1,9 @@
-﻿using Fake.Application.Dtos;
-using Fake.Domain.Repositories;
-using Fake.TenantManagement.Domain.Dtos;
+﻿using Fake.Domain.Repositories;
 
 namespace Fake.TenantManagement.Domain.TenantAggregate;
 
-public interface ITenantRepository : IRepository<Tenant, Guid>
+public interface ITenantRepository : IRepository<Tenant>
 {
-    Task<Tenant?> FindByNameAsync(string normalizedName);
-    Task<PagedResult<Tenant>> GetPagedListAsync(GetTenantPagedQuery query);
+    // Task<Tenant?> FindByNameAsync(string name);
+    // Task<PaginatedResult<Tenant>> GetPagedListAsync(GetTenantPagedQuery query);
 }
