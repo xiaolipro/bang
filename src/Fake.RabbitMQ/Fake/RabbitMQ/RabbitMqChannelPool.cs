@@ -30,9 +30,9 @@ public class RabbitMqChannelPool(
             channelName,
             _ => new ChannelWrapper(rabbitMqChannelFactory.CreateChannel(connectionName))
         );
-        
+
         wrapper.Acquire();
-        
+
         return new ChannelAccessor(channelName, wrapper);
     }
 
@@ -58,21 +58,21 @@ public class RabbitMqChannelPool(
         foreach (var channelWrapper in Channels.Values)
         {
             var itemTime = clock.MeasureExecutionTime(timeout =>
+            {
+                try
                 {
-                    try
-                    {
-                        channelWrapper.Dispose((TimeSpan)timeout);
-                    }
-                    catch (Exception ex)
-                    {
-                        logger.LogWarning("释放Channel失败" + ex);
-                    }
-                }, remainingTime);
+                    channelWrapper.Dispose((TimeSpan)timeout);
+                }
+                catch (Exception ex)
+                {
+                    logger.LogWarning("释放Channel失败" + ex);
+                }
+            }, remainingTime);
 
             remainingTime = remainingTime > itemTime ? remainingTime - itemTime : TimeSpan.Zero;
         }
     }
-    
+
     protected class ChannelAccessor(string name, ChannelWrapper channelWrapper) : IChannelAccessor
     {
         public string Name { get; } = name;
@@ -95,7 +95,7 @@ public class RabbitMqChannelPool(
         {
             lock (this)
             {
-                while (_isInUse) // race
+                while (_isInUse) // race, only one can use it
                 {
                     // 释放锁，等待其他线程调用 Release 方法
                     Monitor.Wait(this);

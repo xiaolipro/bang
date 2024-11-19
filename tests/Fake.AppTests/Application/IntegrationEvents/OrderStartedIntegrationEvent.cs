@@ -1,4 +1,4 @@
-﻿using Fake.Domain.Events;
+﻿using Fake.EventBus;
 
 namespace Application.IntegrationEvents;
 

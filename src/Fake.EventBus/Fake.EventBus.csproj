@@ -12,8 +12,4 @@
         <ProjectReference Include="..\Fake.UnitOfWork\Fake.UnitOfWork.csproj"/>
     </ItemGroup>
 
-    <ItemGroup>
-      <Folder Include="Fake" />
-    </ItemGroup>
-
 </Project>

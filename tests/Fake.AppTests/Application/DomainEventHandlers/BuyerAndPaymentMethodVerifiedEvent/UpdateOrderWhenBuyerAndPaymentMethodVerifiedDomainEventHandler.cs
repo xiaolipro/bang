@@ -2,7 +2,6 @@
 using Domain.Events;
 using Fake;
 using Fake.Auditing;
-using Fake.EventBus;
 
 namespace Application.DomainEventHandlers.BuyerAndPaymentMethodVerifiedEvent;
 
@@ -10,7 +9,7 @@ public class
     UpdateOrderWhenBuyerAndPaymentMethodVerifiedDomainEventHandler(
         IOrderRepository orderRepository,
         ILogger<UpdateOrderWhenBuyerAndPaymentMethodVerifiedDomainEventHandler> logger)
-    : IEventHandler<
+    : Fake.EventBus.EventHandler<
         BuyerAndPaymentMethodVerifiedDomainEvent>
 {
     public int Order { get; set; }
@@ -19,8 +18,7 @@ public class
     // Domain Logic comment:
     // When the Buyer and Buyer's payment method have been created or verified that they existed, 
     // then we can update the original Order with the BuyerId and PaymentId (foreign keys)
-    public async Task HandleAsync(BuyerAndPaymentMethodVerifiedDomainEvent buyerPaymentMethodVerifiedEvent,
-        CancellationToken cancellationToken)
+    public override async Task HandleAsync(BuyerAndPaymentMethodVerifiedDomainEvent buyerPaymentMethodVerifiedEvent)
     {
         var orderToUpdate = await orderRepository.GetAsync(buyerPaymentMethodVerifiedEvent.OrderId);
         ThrowHelper.ThrowIfNull(orderToUpdate, nameof(orderToUpdate));

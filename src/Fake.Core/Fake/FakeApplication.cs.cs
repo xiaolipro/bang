@@ -274,11 +274,11 @@ public class FakeApplication : IFakeApplication
             return options.ApplicationName;
         }
 
-        var configuration = options.Services.GetConfigurationOrNull();
+        var configuration = options.Services.GetConfiguration();
 
-        if (configuration == default) return Assembly.GetEntryAssembly()?.GetName().Name ?? string.Empty;
+        if (!configuration[nameof(ApplicationName)].IsNullOrEmpty()) return configuration[nameof(ApplicationName)]!;
 
-        return configuration[nameof(IApplicationInfo.ApplicationName)] ?? string.Empty;
+        return Assembly.GetEntryAssembly()?.GetName().Name ?? SimpleGuidGenerator.Instance.GenerateAsString();
     }
 
     private void WriteInitLogs(IServiceProvider serviceProvider)
@@ -298,8 +298,8 @@ public class FakeApplication : IFakeApplication
 
     private void AddFakeCoreServices(IServiceCollection services, FakeApplicationCreationOptions creationOptions)
     {
-        var configuration = services.GetInstanceOrNull<IConfiguration>();
-        
+        var configuration = services.GetConfigurationOrNull();
+
         // tips：当services中没有IConfiguration时，会自动创建一个
         if (configuration == null)
         {
@@ -313,10 +313,10 @@ public class FakeApplication : IFakeApplication
         if (services.GetInstanceOrNull<ILoggerFactory>() == null)
         {
             services.AddLogging(logging =>
-                {
-                    logging.AddConfiguration(configuration.GetSection("Logging"));
-                    logging.AddConsole();
-                });
+            {
+                logging.AddConfiguration(configuration.GetSection("Logging"));
+                logging.AddConsole();
+            });
         }
 
         var assemblyScanner = new FakeAssemblyScanner(this);

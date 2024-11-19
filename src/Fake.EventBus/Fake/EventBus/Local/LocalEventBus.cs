@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Threading;
 using System.Threading.Tasks;
 using Fake.Helpers;
 using Microsoft.Extensions.DependencyInjection;
@@ -16,7 +15,7 @@ public class LocalEventBus(
 {
     private readonly ConcurrentDictionary<Type, EventHandlerWrapper> _eventHandlers = new();
 
-    public virtual async Task PublishAsync(EventBase @event)
+    public virtual async Task PublishAsync(Event @event)
     {
         ThrowHelper.ThrowIfNull(@event, nameof(@event));
 
@@ -34,28 +33,17 @@ public class LocalEventBus(
         });
 
         using var scope = serviceScopeFactory.CreateScope();
-        await eventHandler.HandleAsync(@event, scope.ServiceProvider, ProcessingEventAsync, default);
+        await eventHandler.HandleAsync(@event, scope.ServiceProvider, ProcessingEventAsync);
     }
 
     protected virtual async Task ProcessingEventAsync(IEnumerable<EventHandlerExecutor> eventHandlerExecutors,
-        EventBase @event,
-        CancellationToken cancellationToken)
+        Event @event)
     {
         // 广播事件
         foreach (var eventHandlerExecutor in eventHandlerExecutors)
         {
             logger.LogDebug("正在处理: {Event}", @event.ToString());
-            await eventHandlerExecutor.HandlerCallback(@event, cancellationToken);
+            await eventHandlerExecutor.HandleFunc(@event);
         }
-    }
-
-    public virtual void Subscribe<TEvent, THandler>() where TEvent : EventBase where THandler : IEventHandler<TEvent>
-    {
-        // 本地事件总线不需要订阅
-    }
-
-    public virtual void Unsubscribe<TEvent, THandler>() where TEvent : EventBase where THandler : IEventHandler<TEvent>
-    {
-        // 本地事件总线不需要订阅
     }
 }

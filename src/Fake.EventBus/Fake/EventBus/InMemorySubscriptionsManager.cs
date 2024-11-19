@@ -19,7 +19,7 @@ public class InMemorySubscriptionsManager : ISubscriptionsManager
 
     public bool IsEmpty => _subscriptions.Count == 0;
 
-    public event EventHandler<string>? OnEventRemoved;
+    public event System.EventHandler<string>? OnEventRemoved;
 
     public void AddDynamicSubscription<THandler>(string eventName)
         where THandler : IDynamicEventHandler
@@ -30,8 +30,8 @@ public class InMemorySubscriptionsManager : ISubscriptionsManager
     }
 
     public void AddSubscription<TEvent, THandler>()
-        where TEvent : EventBase
-        where THandler : IEventHandler<TEvent>
+        where TEvent : Event
+        where THandler : EventHandler<TEvent>
     {
         var subscription = SubscriptionInfo.Typed(typeof(TEvent), typeof(THandler));
         DoAddSubscriptionInfo(subscription);
@@ -51,8 +51,8 @@ public class InMemorySubscriptionsManager : ISubscriptionsManager
     }
 
     public void RemoveSubscription<TEvent, THandler>()
-        where TEvent : EventBase
-        where THandler : IEventHandler<TEvent>
+        where TEvent : Event
+        where THandler : EventHandler<TEvent>
     {
         string eventName = GetEventName<TEvent>();
         var subscription = DoFindSubscription(eventName, typeof(THandler));
@@ -63,16 +63,16 @@ public class InMemorySubscriptionsManager : ISubscriptionsManager
 
     public IEnumerable<SubscriptionInfo> GetSubscriptionInfos(string eventName) => _subscriptions[eventName];
 
-    public IEnumerable<SubscriptionInfo?> GetSubscriptionInfos<TEvent>() where TEvent : EventBase
+    public IEnumerable<SubscriptionInfo?> GetSubscriptionInfos<TEvent>() where TEvent : Event
         => GetSubscriptionInfos(GetEventName<TEvent>());
 
-    public bool HasSubscriptions<TEvent>() where TEvent : EventBase
+    public bool HasSubscriptions<TEvent>() where TEvent : Event
         => HasSubscriptions(GetEventName<TEvent>());
 
     public bool HasSubscriptions(string eventName)
         => _subscriptions.ContainsKey(eventName);
 
-    public string GetEventName<TEvent>() where TEvent : EventBase
+    public string GetEventName<TEvent>() where TEvent : Event
         => typeof(TEvent).Name;
 
     public Type? GetEventTypeByName(string eventName)

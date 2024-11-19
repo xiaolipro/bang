@@ -1,13 +1,27 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Threading;
+using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Fake.EventBus.Local;
 
 public abstract class EventHandlerWrapper
 {
-    public abstract Task HandleAsync(EventBase @event, IServiceProvider serviceProvider,
-        Func<IEnumerable<EventHandlerExecutor>, EventBase, CancellationToken, Task> publish,
-        CancellationToken cancellationToken);
+    public abstract Task HandleAsync(Event @event, IServiceProvider serviceProvider,
+        Func<IEnumerable<EventHandlerExecutor>, Event, Task> publish);
+}
+
+public class EventHandlerWrapperImpl<TEvent> : EventHandlerWrapper where TEvent : Event
+{
+    public override Task HandleAsync(Event @event, IServiceProvider serviceProvider,
+        Func<IEnumerable<EventHandlerExecutor>, Event, Task> publish)
+    {
+        var handlers = serviceProvider
+            .GetServices<EventHandler<TEvent>>()
+            .Select(handler => new EventHandlerExecutor(handler,
+                theEvent => handler.HandleAsync((TEvent)theEvent)));
+
+        return publish(handlers, @event);
+    }
 }

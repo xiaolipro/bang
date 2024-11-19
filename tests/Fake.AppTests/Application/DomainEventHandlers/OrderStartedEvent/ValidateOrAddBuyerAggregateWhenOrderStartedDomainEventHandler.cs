@@ -1,7 +1,6 @@
 ﻿using Domain.Aggregates.BuyerAggregate;
 using Domain.Events;
 using Fake.Auditing;
-using Fake.EventBus;
 
 namespace Application.DomainEventHandlers.OrderStartedEvent;
 
@@ -13,11 +12,9 @@ public class ValidateOrAddBuyerAggregateWhenOrderStartedDomainEventHandler(
     public int Order { get; set; }
 
     [Audited]
-    public async Task HandleAsync(OrderStartedDomainEvent orderStartedEvent,
-        CancellationToken cancellationToken)
+    public async Task HandleAsync(OrderStartedDomainEvent orderStartedEvent)
     {
-        var buyer = await buyerRepository.FirstOrDefaultAsync(x => x.IdentityGuid == orderStartedEvent.UserId,
-            cancellationToken: cancellationToken);
+        var buyer = await buyerRepository.FirstOrDefaultAsync(x => x.IdentityGuid == orderStartedEvent.UserId);
         bool buyerOriginallyExisted = buyer != null;
 
         if (!buyerOriginallyExisted)
@@ -34,8 +31,8 @@ public class ValidateOrAddBuyerAggregateWhenOrderStartedDomainEventHandler(
             orderStartedEvent.Order.Id);
 
         var buyerUpdated = buyerOriginallyExisted
-            ? await buyerRepository.UpdateAsync(buyer, cancellationToken: cancellationToken)
-            : await buyerRepository.InsertAsync(buyer, cancellationToken: cancellationToken);
+            ? await buyerRepository.UpdateAsync(buyer)
+            : await buyerRepository.InsertAsync(buyer);
 
         logger.LogDebug("Buyer {BuyerId} and related payment method were validated or updated for orderId: {OrderId}",
             buyerUpdated.Id, orderStartedEvent.Order.Id);

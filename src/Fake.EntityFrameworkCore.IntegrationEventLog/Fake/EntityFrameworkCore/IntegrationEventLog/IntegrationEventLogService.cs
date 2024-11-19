@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
-using Fake.Domain.Events;
 using Fake.EventBus;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
@@ -39,7 +38,7 @@ public class IntegrationEventLogService(IntegrationEventLogContext integrationEv
         return new List<IntegrationEventLogEntry>();
     }
 
-    public Task SaveEventAsync(EventBase @event, IDbContextTransaction? transaction = null)
+    public Task SaveEventAsync(Event @event, IDbContextTransaction? transaction = null)
     {
         //if (transaction == null) throw new ArgumentNullException(nameof(transaction));
 

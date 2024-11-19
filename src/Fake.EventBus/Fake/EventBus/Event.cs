@@ -3,7 +3,7 @@
 namespace Fake.EventBus;
 
 [Serializable]
-public abstract class EventBase
+public abstract class Event
 {
     /// <summary>
     /// 事件Id

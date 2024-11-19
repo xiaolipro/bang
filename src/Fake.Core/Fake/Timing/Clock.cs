@@ -43,11 +43,11 @@ public class Clock(IOptions<FakeClockOptions> options) : IFakeClock
         return elapsed;
     }
 
-    public TimeSpan MeasureExecutionTime(Action<object> action, object arg)
+    public TimeSpan MeasureExecutionTime(Action<object> action, object args)
     {
         _stopwatch.Value ??= new Stopwatch();
         _stopwatch.Value.Start();
-        action(arg);
+        action(args);
         _stopwatch.Value.Stop();
         var elapsed = _stopwatch.Value.Elapsed;
         _stopwatch.Value = null;

@@ -2,7 +2,7 @@ using Fake.DependencyInjection;
 
 namespace Fake.EventBus.Tests.Events;
 
-public class SimpleLocalEventHandler : IEventHandler<SimpleEvent>, ITransientDependency, IDisposable
+public class SimpleLocalEventHandler : EventHandler<SimpleEvent>, ITransientDependency, IDisposable
 {
     public static int HandleCount { get; set; }
     public static int DisposedCount { get; set; }
@@ -13,7 +13,7 @@ public class SimpleLocalEventHandler : IEventHandler<SimpleEvent>, ITransientDep
         DisposedCount = 0;
     }
 
-    public Task HandleAsync(SimpleEvent @event, CancellationToken cancellationToken)
+    public override Task HandleAsync(SimpleEvent @event)
     {
         HandleCount++;
         return Task.CompletedTask;

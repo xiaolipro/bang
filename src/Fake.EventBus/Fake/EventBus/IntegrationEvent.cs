@@ -1,11 +1,12 @@
-﻿using Fake.EventBus;
+﻿using System;
 
-namespace Fake.Domain.Events;
+namespace Fake.EventBus;
 
 /// <summary>
 /// 集成事件
 /// </summary>
-public class IntegrationEvent : EventBase
+[Serializable]
+public class IntegrationEvent : Event
 {
     public override string ToString()
     {

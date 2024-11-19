@@ -1,11 +1,10 @@
 using System;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace Fake.EventBus.Local;
 
-public record EventHandlerExecutor(object HandlerInstance, Func<EventBase, CancellationToken, Task> HandlerCallback)
+public record EventHandlerExecutor(object HandlerInstance, Func<Event, Task> HandleFunc)
 {
     public object HandlerInstance { get; } = HandlerInstance;
-    public Func<EventBase, CancellationToken, Task> HandlerCallback { get; } = HandlerCallback;
+    public Func<Event, Task> HandleFunc { get; } = HandleFunc;
 }

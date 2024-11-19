@@ -13,7 +13,7 @@ public interface IIntegrationEventLogService : IDisposable
     /// <exception cref="T:System.ArgumentNullException">
     /// <paramref name="transaction" /> is <see langword="null" />.
     /// </exception>
-    Task SaveEventAsync(EventBase integrationEvent, IDbContextTransaction? transaction = null);
+    Task SaveEventAsync(Event integrationEvent, IDbContextTransaction? transaction = null);
 
     Task MarkEventAsPublishedAsync(Guid eventId);
     Task MarkEventAsInProgressAsync(Guid eventId);

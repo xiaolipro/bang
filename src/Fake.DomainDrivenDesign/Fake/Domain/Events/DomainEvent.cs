@@ -5,7 +5,8 @@ namespace Fake.Domain.Events;
 /// <summary>
 /// 领域事件
 /// </summary>
-public class DomainEvent : EventBase
+[Serializable]
+public class DomainEvent : Event
 {
     public override string ToString()
     {

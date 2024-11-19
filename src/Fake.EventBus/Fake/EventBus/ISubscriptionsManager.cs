@@ -16,7 +16,7 @@ namespace Fake.EventBus
         /// <summary>
         /// 事件移除时
         /// </summary>
-        event EventHandler<string>? OnEventRemoved;
+        event System.EventHandler<string>? OnEventRemoved;
 
 
         #region 添加订阅
@@ -35,8 +35,8 @@ namespace Fake.EventBus
         /// <typeparam name="TEvent">事件</typeparam>
         /// <typeparam name="THandler">处理者</typeparam>
         void AddSubscription<TEvent, THandler>()
-            where TEvent : EventBase
-            where THandler : IEventHandler<TEvent>;
+            where TEvent : Event
+            where THandler : EventHandler<TEvent>;
 
         #endregion
 
@@ -57,8 +57,8 @@ namespace Fake.EventBus
         /// <typeparam name="TEvent"></typeparam>
         /// <typeparam name="THandler"></typeparam>
         void RemoveSubscription<TEvent, THandler>()
-            where TEvent : EventBase
-            where THandler : IEventHandler<TEvent>;
+            where TEvent : Event
+            where THandler : EventHandler<TEvent>;
 
         /// <summary>
         /// 清除所有订阅
@@ -82,7 +82,7 @@ namespace Fake.EventBus
         /// </summary>
         /// <typeparam name="TEvent">事件类型</typeparam>
         /// <returns></returns>
-        IEnumerable<SubscriptionInfo?> GetSubscriptionInfos<TEvent>() where TEvent : EventBase;
+        IEnumerable<SubscriptionInfo?> GetSubscriptionInfos<TEvent>() where TEvent : Event;
 
 
         /// <summary>
@@ -90,7 +90,7 @@ namespace Fake.EventBus
         /// </summary>
         /// <typeparam name="TEvent">事件类型</typeparam>
         /// <returns></returns>
-        bool HasSubscriptions<TEvent>() where TEvent : EventBase;
+        bool HasSubscriptions<TEvent>() where TEvent : Event;
 
         /// <summary>
         /// 此事件是否有订阅
@@ -100,7 +100,7 @@ namespace Fake.EventBus
         bool HasSubscriptions(string eventName);
 
 
-        string GetEventName<TEvent>() where TEvent : EventBase;
+        string GetEventName<TEvent>() where TEvent : Event;
 
         Type? GetEventTypeByName(string eventName);
 

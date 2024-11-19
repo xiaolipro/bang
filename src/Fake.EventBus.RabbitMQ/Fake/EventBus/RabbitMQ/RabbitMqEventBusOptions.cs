@@ -1,4 +1,6 @@
-﻿namespace Fake.EventBus.RabbitMQ;
+﻿using System.Text.Json.Serialization.Metadata;
+
+namespace Fake.EventBus.RabbitMQ;
 
 public class RabbitMqEventBusOptions
 {
@@ -8,9 +10,14 @@ public class RabbitMqEventBusOptions
     public string? ConnectionName { get; set; }
 
     /// <summary>
-    /// Broker 交换机名称
+    /// 事件总线交换机名称
     /// </summary>
-    public string BrokerName { get; set; } = "Fake.Exchange.EventBus";
+    public string ExchangeName { get; set; } = "Fake.Exchange.EventBus";
+
+    /// <summary>
+    /// 客户端订阅队列名称
+    /// </summary>
+    public string? QueueName { get; set; }
 
     #region Qos
 
@@ -44,4 +51,15 @@ public class RabbitMqEventBusOptions
     public int QueueMaxLength { get; set; }
 
     #endregion
+
+    public Dictionary<string, Type> EventTypes { get; } = [];
+
+    public JsonSerializerOptions JsonSerializerOptions { get; set; } = DefaultSerializerOptions;
+
+    private static readonly JsonSerializerOptions DefaultSerializerOptions = new()
+    {
+        TypeInfoResolver = JsonSerializer.IsReflectionEnabledByDefault
+            ? new DefaultJsonTypeInfoResolver()
+            : JsonTypeInfoResolver.Combine()
+    };
 }
