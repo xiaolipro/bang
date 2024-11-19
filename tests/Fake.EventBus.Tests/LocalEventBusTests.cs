@@ -24,11 +24,17 @@ public class LocalEventBusTests : ApplicationTest<FakeEventBusTestModule>
 
         Assert.Equal(3, SimpleLocalEventHandler.HandleCount);
     }
-
+public enum MyEnum
+{
+    红 = 1, 绿 = 2
+}
 
     [Fact]
     public async Task 事件处理者可以释放()
     {
+        var t = (MyEnum)3;
+        t = (MyEnum)2;
+        
         await _eventBus.PublishAsync(new SimpleEvent(1));
         await _eventBus.PublishAsync(new SimpleEvent(1));
 

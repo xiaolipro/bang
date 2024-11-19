@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using RabbitMQ.Client;
 
 namespace Fake.RabbitMQ;
@@ -9,6 +10,11 @@ public class FakeRabbitMqOptions
     /// RabbitMQ默认连接
     /// </summary>
     public string DefaultConnectionName { get; set; } = "Default";
+    
+    /// <summary>
+    /// Channel池销毁等待时间
+    /// </summary>
+    public TimeSpan ChannelPoolDisposeDuration { get; set; } = TimeSpan.FromSeconds(10);
 
     public Dictionary<string, ConnectionFactory> Connections { get; set; }
 

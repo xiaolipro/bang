@@ -34,7 +34,7 @@ public class Clock(IOptions<FakeClockOptions> options) : IFakeClock
 
     public virtual TimeSpan MeasureExecutionTime(Action action)
     {
-        _stopwatch.Value = new Stopwatch();
+        _stopwatch.Value ??= new Stopwatch();
         _stopwatch.Value.Start();
         action();
         _stopwatch.Value.Stop();
@@ -43,9 +43,20 @@ public class Clock(IOptions<FakeClockOptions> options) : IFakeClock
         return elapsed;
     }
 
+    public TimeSpan MeasureExecutionTime(Action<object> action, object arg)
+    {
+        _stopwatch.Value ??= new Stopwatch();
+        _stopwatch.Value.Start();
+        action(arg);
+        _stopwatch.Value.Stop();
+        var elapsed = _stopwatch.Value.Elapsed;
+        _stopwatch.Value = null;
+        return elapsed;
+    }
+
     public virtual async Task<TimeSpan> MeasureExecutionTimeAsync(Func<Task> task)
     {
-        _stopwatch.Value = new Stopwatch();
+        _stopwatch.Value ??= new Stopwatch();
         _stopwatch.Value.Start();
         await task();
         _stopwatch.Value.Stop();

@@ -1,23 +1,18 @@
 ﻿using System;
 using System.Collections.Concurrent;
-using System.IO;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using RabbitMQ.Client;
 
 namespace Fake.RabbitMQ;
 
-public class RabbitMqConnectionPool : IRabbitMqConnectionPool
+public class RabbitMqConnectionPool(IOptions<FakeRabbitMqOptions> options, ILogger<RabbitMqConnectionPool> logger)
+    : IRabbitMqConnectionPool
 {
-    private readonly FakeRabbitMqOptions _options;
-    protected ConcurrentDictionary<string, Lazy<IConnection>> Connections { get; }
+    private readonly FakeRabbitMqOptions _options = options.Value;
+    protected ConcurrentDictionary<string, Lazy<IConnection>> Connections { get; } = new();
 
     private bool _isDisposed;
-
-    public RabbitMqConnectionPool(IOptions<FakeRabbitMqOptions> options)
-    {
-        _options = options.Value;
-        Connections = new ConcurrentDictionary<string, Lazy<IConnection>>();
-    }
 
     public IConnection Get(string? connectionName = null)
     {
@@ -27,14 +22,14 @@ public class RabbitMqConnectionPool : IRabbitMqConnectionPool
         {
             var lazyConnection = Connections.GetOrAdd(
                 connectionName, v => new Lazy<IConnection>(() =>
-                {
-                    var connectionFactory = _options.GetOrDefault(v);
-                    // 处理集群
-                    var hostnames = connectionFactory.HostName.TrimEnd(';').Split(';');
-                    return hostnames.Length == 1
-                        ? connectionFactory.CreateConnection()
-                        : connectionFactory.CreateConnection(hostnames);
-                })
+                    {
+                        var connectionFactory = _options.GetOrDefault(v);
+                        // 处理集群
+                        var hostnames = connectionFactory.HostName.TrimEnd(';').Split(';');
+                        return hostnames.Length == 1
+                            ? connectionFactory.CreateConnection()
+                            : connectionFactory.CreateConnection(hostnames);
+                    })
             );
 
             return lazyConnection.Value;
@@ -61,9 +56,9 @@ public class RabbitMqConnectionPool : IRabbitMqConnectionPool
             {
                 connection.Value.Dispose();
             }
-            catch
+            catch (Exception ex)
             {
-                // ignored
+                logger.LogWarning(ex, "Failed to dispose RabbitMQ connection.");
             }
         }
 

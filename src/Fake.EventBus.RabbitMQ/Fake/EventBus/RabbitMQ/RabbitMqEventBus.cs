@@ -11,7 +11,7 @@ namespace Fake.EventBus.RabbitMQ;
 /// </remarks>
 public class RabbitMqEventBus : IDistributedEventBus, IDynamicEventBus, IDisposable
 {
-    private readonly IRabbitMqConnector _rabbitMqConnector;
+    private readonly IRabbitMqChannelFactory _rabbitMqChannelFactory;
     private readonly ILogger<RabbitMqEventBus> _logger;
     private readonly IServiceScopeFactory _serviceScopeFactory;
     private readonly ISubscriptionsManager _subscriptionsManager;
@@ -26,7 +26,7 @@ public class RabbitMqEventBus : IDistributedEventBus, IDynamicEventBus, IDisposa
     private IModel _consumerChannel;
 
     public RabbitMqEventBus(
-        IRabbitMqConnector rabbitMqConnector,
+        IRabbitMqChannelFactory rabbitMqChannelFactory,
         ILogger<RabbitMqEventBus> logger,
         IServiceScopeFactory serviceScopeFactory,
         ISubscriptionsManager subscriptionsManager,
@@ -34,7 +34,7 @@ public class RabbitMqEventBus : IDistributedEventBus, IDynamicEventBus, IDisposa
         IApplicationInfo applicationInfo
     )
     {
-        _rabbitMqConnector = rabbitMqConnector;
+        _rabbitMqChannelFactory = rabbitMqChannelFactory;
         _logger = logger;
         _serviceScopeFactory = serviceScopeFactory;
         _subscriptionsManager = subscriptionsManager;
@@ -51,7 +51,7 @@ public class RabbitMqEventBus : IDistributedEventBus, IDynamicEventBus, IDisposa
     {
         var eventName = @event.GetType().Name;
 
-        using var channel = _rabbitMqConnector.CreateChannel(_eventBusOptions.ConnectionName);
+        using var channel = _rabbitMqChannelFactory.CreateChannel(_eventBusOptions.ConnectionName);
 
         channel.ExchangeDeclare(exchange: _brokerName, ExchangeType.Direct);
 
@@ -129,7 +129,7 @@ public class RabbitMqEventBus : IDistributedEventBus, IDynamicEventBus, IDisposa
         // 一个事件一个消费监听
         if (_subscriptionsManager.HasSubscriptions(eventName)) return;
 
-        _rabbitMqConnector.KeepAlive(_eventBusOptions.ConnectionName);
+        _rabbitMqChannelFactory.KeepAlive(_eventBusOptions.ConnectionName);
 
         _consumerChannel.QueueBind(queue: _subscriptionQueueName, exchange: _brokerName, routingKey: eventName);
     }
@@ -141,14 +141,14 @@ public class RabbitMqEventBus : IDistributedEventBus, IDynamicEventBus, IDisposa
     /// <exception cref="NotImplementedException"></exception>
     private void DoRabbitMqUnSubscription(string eventName)
     {
-        _rabbitMqConnector.KeepAlive(_eventBusOptions.ConnectionName);
+        _rabbitMqChannelFactory.KeepAlive(_eventBusOptions.ConnectionName);
 
         _consumerChannel.QueueUnbind(queue: _subscriptionQueueName, exchange: _brokerName, routingKey: eventName);
     }
 
     private void OnEventRemoved(object sender, string eventName)
     {
-        using var channel = _rabbitMqConnector.CreateChannel(_eventBusOptions.ConnectionName);
+        using var channel = _rabbitMqChannelFactory.CreateChannel(_eventBusOptions.ConnectionName);
         // 解绑
         channel.QueueUnbind(queue: _subscriptionQueueName, exchange: _brokerName, routingKey: eventName);
 
@@ -234,7 +234,7 @@ public class RabbitMqEventBus : IDistributedEventBus, IDynamicEventBus, IDisposa
     {
         _logger.LogDebug("创建RabbitMQ消费者通道");
 
-        _rabbitMqConnector.KeepAlive(_eventBusOptions.ConnectionName);
+        _rabbitMqChannelFactory.KeepAlive(_eventBusOptions.ConnectionName);
 
         var arguments = new Dictionary<string, object>();
 
@@ -250,7 +250,7 @@ public class RabbitMqEventBus : IDistributedEventBus, IDynamicEventBus, IDisposa
             string dlxRouteKey = dlxQueueName;
 
             _logger.LogDebug("创建RabbitMQ死信交换DLX");
-            using (var deadLetterChannel = _rabbitMqConnector.CreateChannel(_eventBusOptions.ConnectionName))
+            using (var deadLetterChannel = _rabbitMqChannelFactory.CreateChannel(_eventBusOptions.ConnectionName))
             {
                 // 声明死信交换机
                 deadLetterChannel.ExchangeDeclare(exchange: dlxExchangeName, type: ExchangeType.Direct);
@@ -274,7 +274,7 @@ public class RabbitMqEventBus : IDistributedEventBus, IDynamicEventBus, IDisposa
             }
         }
 
-        var consumerChannel = _rabbitMqConnector.CreateChannel(_eventBusOptions.ConnectionName);
+        var consumerChannel = _rabbitMqChannelFactory.CreateChannel(_eventBusOptions.ConnectionName);
         // 声明直连交换机
         consumerChannel.ExchangeDeclare(exchange: _brokerName, type: ExchangeType.Direct);
         // 声明队列

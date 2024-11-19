@@ -32,6 +32,8 @@ public interface IFakeClock
     /// <param name="action">需要评估的动作</param>
     /// <returns>动作所花费的时间</returns>
     TimeSpan MeasureExecutionTime(Action action);
+    
+    TimeSpan MeasureExecutionTime(Action<object> action, object arg);
 
     /// <summary>
     /// 度量异步任务执行时间

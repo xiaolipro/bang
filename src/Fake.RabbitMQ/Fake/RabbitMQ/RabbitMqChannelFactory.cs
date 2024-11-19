@@ -9,27 +9,19 @@ namespace Fake.RabbitMQ;
 /// RabbitMQ连接器、Channel工厂
 /// </summary>
 /// <remarks>复用同一个IConnection，减少连接的高昂开销</remarks>
-public class RabbitMqConnector : IRabbitMqConnector
+public class RabbitMqChannelFactory(ILogger<RabbitMqChannelFactory> logger, IRabbitMqConnectionPool connectionPool)
+    : IRabbitMqChannelFactory
 {
-    private readonly ILogger<RabbitMqConnector> _logger;
-    private readonly IRabbitMqConnectionPool _connectionPool;
     private readonly object _lock = new();
 
     private bool _disposed;
-
-
-    public RabbitMqConnector(ILogger<RabbitMqConnector> logger, IRabbitMqConnectionPool connectionPool)
-    {
-        _logger = logger;
-        _connectionPool = connectionPool;
-    }
 
 
     public IModel CreateChannel(string? connectionName)
     {
         KeepAlive(connectionName);
 
-        return _connectionPool.Get(connectionName).CreateModel();
+        return connectionPool.Get(connectionName).CreateModel();
     }
 
     /// <summary>
@@ -37,7 +29,7 @@ public class RabbitMqConnector : IRabbitMqConnector
     /// </summary>
     public void KeepAlive(string? connectionName)
     {
-        if (_connectionPool.Get(connectionName) is { IsOpen: true } && !_disposed) return;
+        if (connectionPool.Get(connectionName) is { IsOpen: true }) return;
 
         ConnectRabbitMq(connectionName);
     }
@@ -47,28 +39,29 @@ public class RabbitMqConnector : IRabbitMqConnector
         if (_disposed) return;
 
         _disposed = true;
+        logger.LogInformation("Channel工厂被销毁，正在释放RabbitMQ连接池。。。");
 
         try
         {
-            _connectionPool.Dispose();
+            connectionPool.Dispose();
         }
         catch (IOException ex)
         {
-            _logger.LogCritical(ex.ToString());
+            logger.LogCritical(ex.ToString());
         }
     }
 
     /// <summary>
     /// 重连
     /// </summary>
-    /// <exception cref="Exception">RabbitMQ connections could not be created and opened</exception>
+    /// <exception cref="FakeException">RabbitMq connections could not be created and opened</exception>
     private void ConnectRabbitMq(string? connectionName)
     {
-        _logger.LogInformation($"正在尝试连接客户端  RabbitMQ:ConnectionName:{connectionName}");
+        logger.LogInformation($"正在尝试连接客户端  RabbitMQ:ConnectionName:{connectionName}");
 
         lock (_lock)
         {
-            var connection = _connectionPool.Get(connectionName);
+            var connection = connectionPool.Get(connectionName);
 
             if (connection is { IsOpen: false } || _disposed)
             {
@@ -77,7 +70,7 @@ public class RabbitMqConnector : IRabbitMqConnector
 
             OnConnection(connection, connectionName);
 
-            _logger.LogInformation(
+            logger.LogInformation(
                 $"成功建立持久连接 RabbitMQ:ConnectionName:{connectionName} -> {connection.Endpoint.HostName}");
         }
     }
@@ -88,7 +81,7 @@ public class RabbitMqConnector : IRabbitMqConnector
         {
             if (_disposed) return;
 
-            _logger.LogWarning($"RabbitMQ:ConnectionName:{connectionName} 连接已被关闭，正在尝试重新连接。。。");
+            logger.LogWarning($"RabbitMQ:ConnectionName:{connectionName} 连接已被关闭，正在尝试重新连接。。。");
 
             ConnectRabbitMq(connectionName);
         };
@@ -96,7 +89,7 @@ public class RabbitMqConnector : IRabbitMqConnector
         {
             if (_disposed) return;
 
-            _logger.LogWarning($"RabbitMQ:ConnectionName:{connectionName} 连接发生异常：{args.Exception.Message}，正在尝试重新连接。。。");
+            logger.LogWarning($"RabbitMQ:ConnectionName:{connectionName} 连接发生异常：{args.Exception.Message}，正在尝试重新连接。。。");
 
             ConnectRabbitMq(connectionName);
         };
@@ -107,7 +100,7 @@ public class RabbitMqConnector : IRabbitMqConnector
         {
             if (_disposed) return;
 
-            _logger.LogWarning($"RabbitMQ:ConnectionName:{connectionName} 连接被阻塞，正在尝试重新连接。。。");
+            logger.LogWarning($"RabbitMQ:ConnectionName:{connectionName} 连接被阻塞，正在尝试重新连接。。。");
 
             ConnectRabbitMq(connectionName);
         };
