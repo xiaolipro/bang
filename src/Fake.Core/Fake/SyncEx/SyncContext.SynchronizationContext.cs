@@ -6,12 +6,12 @@ public sealed partial class SyncContext
     {
         public SyncContext Context => context;
 
-        public override void Post(SendOrPostCallback d, object state)
+        public override void Post(SendOrPostCallback d, object? state)
         {
             context.Enqueue(context._taskFactory.StartNew(() => d(state)), true);
         }
 
-        public override void Send(SendOrPostCallback d, object state)
+        public override void Send(SendOrPostCallback d, object? state)
         {
             if (SyncContext.Current == context)
             {

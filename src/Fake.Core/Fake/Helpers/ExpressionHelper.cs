@@ -18,20 +18,11 @@ public static class ExpressionHelper
         return Expression.Lambda<Func<T, bool>>(Expression.AndAlso(left!, right!), parameter);
     }
 
-    private class ReplaceExpressionVisitor : ExpressionVisitor
+    private class ReplaceExpressionVisitor(Expression oldValue, Expression newValue) : ExpressionVisitor
     {
-        private readonly Expression _oldValue;
-        private readonly Expression _newValue;
-
-        public ReplaceExpressionVisitor(Expression oldValue, Expression newValue)
+        public override Expression Visit(Expression? node)
         {
-            _oldValue = oldValue;
-            _newValue = newValue;
-        }
-
-        public override Expression Visit(Expression node)
-        {
-            return node == _oldValue ? _newValue : base.Visit(node)!;
+            return node == oldValue ? newValue : base.Visit(node)!;
         }
     }
 }

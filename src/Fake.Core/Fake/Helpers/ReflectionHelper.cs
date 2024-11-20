@@ -87,7 +87,7 @@ public static class ReflectionHelper
     /// <param name="type"></param>
     /// <param name="args"></param>
     /// <returns></returns>
-    public static object CreateInstance(Type type, params object?[] args)
+    public static object? CreateInstance(Type type, params object?[] args)
     {
         //TODO: 可以优化
         return Activator.CreateInstance(type, args);
@@ -115,13 +115,6 @@ public static class ReflectionHelper
 
     public static IReadOnlyList<Type> GetAssemblyAllTypes(Assembly assembly)
     {
-        try
-        {
-            return AssemblyCaches.GetOrAdd(assembly, _ => assembly.GetTypes());
-        }
-        catch (ReflectionTypeLoadException ex)
-        {
-            return ex.Types;
-        }
+        return AssemblyCaches.GetOrAdd(assembly, _ => assembly.GetTypes());
     }
 }

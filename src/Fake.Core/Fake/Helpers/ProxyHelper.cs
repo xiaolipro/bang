@@ -6,20 +6,15 @@ public static class ProxyHelper
 {
     private const string CastleProxyNamespace = "Castle.Proxies";
 
-    public static Type GetUnProxiedType(object obj)
+    public static Type? GetUnProxiedType(object obj)
     {
         var type = obj.GetType();
         if (type.Namespace != CastleProxyNamespace) return type;
 
         var target = UnProxy(obj);
-        if (target != null)
+        if (target == obj)
         {
-            if (target == obj)
-            {
-                return type.GetTypeInfo().BaseType;
-            }
-
-            return target.GetType();
+            return type.GetTypeInfo().BaseType;
         }
 
         return obj.GetType();
@@ -41,6 +36,6 @@ public static class ProxyHelper
 
         if (targetField == null) return obj;
 
-        return targetField.GetValue(obj);
+        return targetField.GetValue(obj)!;
     }
 }

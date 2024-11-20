@@ -2,9 +2,7 @@
 
     <Import Project="../../common.props"/>
     <Import Project="../../configureawait.props"/>
-    <PropertyGroup>
-        <TargetFramework>netstandard2.0</TargetFramework>
-    </PropertyGroup>
+    
     <ItemGroup>
         <ProjectReference Include="..\Fake.Core\Fake.Core.csproj"/>
         <ProjectReference Include="..\Fake.Security\Fake.Security.csproj" />

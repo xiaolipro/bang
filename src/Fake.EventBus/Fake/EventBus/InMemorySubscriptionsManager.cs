@@ -31,7 +31,7 @@ public class InMemorySubscriptionsManager : ISubscriptionsManager
 
     public void AddSubscription<TEvent, THandler>()
         where TEvent : Event
-        where THandler : EventHandler<TEvent>
+        where THandler : IEventHandler<TEvent>
     {
         var subscription = SubscriptionInfo.Typed(typeof(TEvent), typeof(THandler));
         DoAddSubscriptionInfo(subscription);
@@ -52,7 +52,7 @@ public class InMemorySubscriptionsManager : ISubscriptionsManager
 
     public void RemoveSubscription<TEvent, THandler>()
         where TEvent : Event
-        where THandler : EventHandler<TEvent>
+        where THandler : IEventHandler<TEvent>
     {
         string eventName = GetEventName<TEvent>();
         var subscription = DoFindSubscription(eventName, typeof(THandler));

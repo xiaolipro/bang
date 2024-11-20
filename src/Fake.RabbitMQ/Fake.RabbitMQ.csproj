@@ -3,18 +3,9 @@
     <Import Project="../../common.props" />
     <Import Project="../../configureawait.props" />
 
-    <PropertyGroup>
-        <TargetFramework>netstandard2.0</TargetFramework>
-    </PropertyGroup>
-
-    <ItemGroup>
-      <ProjectReference Include="..\Fake.Core\Fake.Core.csproj" />
-    </ItemGroup>
-
-
-
     <ItemGroup>
         <PackageReference Include="RabbitMQ.Client" Version="6.6.0"/>
+        <PackageReference Include="Polly.Core" Version="8.5.0" />
     </ItemGroup>
 
 </Project>

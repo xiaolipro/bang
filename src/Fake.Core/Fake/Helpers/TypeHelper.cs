@@ -11,7 +11,7 @@ public static class TypeHelper
     {
         if (type.IsGenericType)
         {
-            return type.GetGenericArguments().FirstOrDefault();
+            return type.GetGenericArguments().FirstOrDefault()!;
         }
 
         return type;

@@ -1,6 +1,4 @@
-using System;
 using System.Collections.Concurrent;
-using System.Threading;
 using Fake.Timing;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -9,7 +7,7 @@ using RabbitMQ.Client;
 namespace Fake.RabbitMQ;
 
 public class RabbitMqChannelPool(
-    IRabbitMqChannelFactory rabbitMqChannelFactory,
+    IRabbitMqConnectionProvider rabbitMqConnectionProvider,
     ILogger<RabbitMqChannelPool> logger,
     IFakeClock clock,
     IOptions<FakeRabbitMqOptions> options) : IRabbitMqChannelPool
@@ -17,7 +15,8 @@ public class RabbitMqChannelPool(
     private bool _isDisposed;
     protected ConcurrentDictionary<string, ChannelWrapper> Channels { get; } = new();
 
-    public virtual IChannelAccessor Acquire(string? channelName = null, string? connectionName = null)
+    public virtual IChannelAccessor Acquire(string? channelName = null, string? connectionName = null,
+        Action<IModel>? configureChannel = null)
     {
         if (_isDisposed)
         {
@@ -28,7 +27,12 @@ public class RabbitMqChannelPool(
 
         var wrapper = Channels.GetOrAdd(
             channelName,
-            _ => new ChannelWrapper(rabbitMqChannelFactory.CreateChannel(connectionName))
+            _ =>
+                {
+                    var wrapper = new ChannelWrapper(rabbitMqConnectionProvider.Get(connectionName).CreateModel());
+                    configureChannel?.Invoke(wrapper.Channel);
+                    return wrapper;
+                }
         );
 
         wrapper.Acquire();
@@ -43,31 +47,30 @@ public class RabbitMqChannelPool(
         _isDisposed = true;
 
         var cost = clock.MeasureExecutionTime(DoDispose);
-        logger.LogInformation($"释放Channel[{Channels.Count}]池完成，耗时：" + cost);
+        logger.LogInformation("Disposed Channel pool ({0} channels) in {1}ms", Channels.Count, cost.TotalMilliseconds);
 
         Channels.Clear();
-        rabbitMqChannelFactory.Dispose();
     }
 
     private void DoDispose()
     {
-        logger.LogInformation($"准备释放{Channels.Count}个Channel");
+        logger.LogInformation("Disposing Channel pool ({0} channels)", Channels.Count);
 
         var remainingTime = options.Value.ChannelPoolDisposeDuration;
 
         foreach (var channelWrapper in Channels.Values)
         {
             var itemTime = clock.MeasureExecutionTime(timeout =>
-            {
-                try
                 {
-                    channelWrapper.Dispose((TimeSpan)timeout);
-                }
-                catch (Exception ex)
-                {
-                    logger.LogWarning("释放Channel失败" + ex);
-                }
-            }, remainingTime);
+                    try
+                    {
+                        channelWrapper.Dispose((TimeSpan)timeout);
+                    }
+                    catch (Exception ex)
+                    {
+                        logger.LogWarning("Dispose channel error: {0}", ex.Message);
+                    }
+                }, remainingTime);
 
             remainingTime = remainingTime > itemTime ? remainingTime - itemTime : TimeSpan.Zero;
         }

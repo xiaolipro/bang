@@ -36,6 +36,12 @@ public class UnitOfWorkHelper : IUnitOfWorkHelper
     {
         ThrowHelper.ThrowIfNull(methodInfo, nameof(methodInfo));
 
+        if (methodInfo.DeclaringType is null)
+        {
+            unitOfWorkAttribute = null;
+            return false;
+        }
+
         unitOfWorkAttribute = null;
         if (methodInfo.IsDefined(typeof(DisableUnitOfWorkAttribute), true)) return false;
         // 继承体系
@@ -50,13 +56,16 @@ public class UnitOfWorkHelper : IUnitOfWorkHelper
     {
         // 先从方法上找
         var attr = methodInfo.GetCustomAttribute<UnitOfWorkAttribute>(true);
-        // 再从类上找
-        return attr ?? methodInfo.DeclaringType.GetTypeInfo().GetCustomAttribute<UnitOfWorkAttribute>(true);
+
+        if (attr is not null) return attr;
+
+        return methodInfo.DeclaringType?.GetTypeInfo().GetCustomAttribute<UnitOfWorkAttribute>(true);
     }
 
     public bool IsReadOnlyUnitOfWorkMethod(MethodInfo methodInfo)
     {
         // TODO: 后续可以支持ReadOnlyUnitOfWorkAttribute
-        return methodInfo.DeclaringType.GetTypeInfo().IsAssignableTo<IReadOnlyUnitOfWorkEnabled>();
+        return methodInfo.DeclaringType != null &&
+               methodInfo.DeclaringType.GetTypeInfo().IsAssignableTo<IReadOnlyUnitOfWorkEnabled>();
     }
 }

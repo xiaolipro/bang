@@ -5,7 +5,7 @@ namespace Fake.EventBus.RabbitMQ;
 public class RabbitMqEventBusOptions
 {
     /// <summary>
-    /// RabbitMQ连接名，若为空则使用默认连接<see cref="FakeRabbitMqOptions"/>
+    /// RabbitMQ连接名，若为空则使用默认连接<see cref="FakeRabbitMqOptions.DefaultConnectionName"/>
     /// </summary>
     public string? ConnectionName { get; set; }
 
@@ -52,7 +52,10 @@ public class RabbitMqEventBusOptions
 
     #endregion
 
-    public Dictionary<string, Type> EventTypes { get; } = [];
+    /// <summary>
+    /// 事件总线注册的事件, 事件名称:事件类型
+    /// </summary>
+    public Dictionary<string, Type> Events { get; } = [];
 
     public JsonSerializerOptions JsonSerializerOptions { get; set; } = DefaultSerializerOptions;
 

@@ -18,7 +18,7 @@ public static class RandomHelper
     /// <returns>返回一个int类型随机数</returns>
     public static int Next(int minValue = 0, int maxValue = Int32.MaxValue)
     {
-        return LocalRandom.Value.Next(minValue, maxValue);
+        return LocalRandom.Value!.Next(minValue, maxValue);
     }
     
     /// <summary>

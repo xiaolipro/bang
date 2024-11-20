@@ -4,7 +4,6 @@
     <Import Project="../../configureawait.props" />
 
     <PropertyGroup>
-        <TargetFramework>net8.0</TargetFramework>
         <DefineConstants>SUPPORT_LOAD_BALANCING</DefineConstants>
     </PropertyGroup>
     <ItemGroup>

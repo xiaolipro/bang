@@ -13,7 +13,7 @@ public static class FakeDataParameterExtensions
     //     The parameter to get a value for.
     public static string? GetStringValue(this IDataParameter parameter)
     {
-        object value = parameter.Value;
+        object? value = parameter.Value;
         if (value == null || value == DBNull.Value)
         {
             return null;

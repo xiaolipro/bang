@@ -32,9 +32,9 @@ public abstract class FakeMethodInvocationAdapterBase : IFakeMethodInvocation
         var dict = new Dictionary<string, object>();
 
         var methodParameters = Method.GetParameters();
-        for (int i = 0; i < methodParameters.Length; i++)
+        for (var i = 0; i < methodParameters.Length; i++)
         {
-            dict[methodParameters[i].Name] = Invocation.Arguments[i];
+            dict[methodParameters[i].Name!] = Invocation.Arguments[i];
         }
 
         return dict;

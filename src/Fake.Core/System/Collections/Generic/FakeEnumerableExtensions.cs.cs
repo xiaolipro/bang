@@ -63,7 +63,7 @@ public static class FakeEnumerableExtensions
     public static List<T> SortByDependencies<T>(
         this IEnumerable<T> source,
         Func<T, IEnumerable<T>> getDependencies,
-        IEqualityComparer<T>? comparer = null)
+        IEqualityComparer<T>? comparer = null) where T : notnull
     {
         /* See: http://www.codeproject.com/Articles/869059/Topological-sorting-in-Csharp
          *      http://en.wikipedia.org/wiki/Topological_sorting
@@ -83,7 +83,7 @@ public static class FakeEnumerableExtensions
     }
 
     private static void SortByDependenciesVisit<T>(T item, Func<T, IEnumerable<T>> getDependencies, List<T> sorted,
-        Dictionary<T, bool> visited)
+        Dictionary<T, bool> visited) where T : notnull
     {
         var alreadyVisited = visited.TryGetValue(item, out var processing);
 
@@ -104,12 +104,9 @@ public static class FakeEnumerableExtensions
 
         // 递归处理以item为起点，连通的其它点
         var dependencies = getDependencies(item);
-        if (dependencies != null)
+        foreach (var dependency in dependencies)
         {
-            foreach (var dependency in dependencies)
-            {
-                SortByDependenciesVisit(dependency, getDependencies, sorted, visited);
-            }
+            SortByDependenciesVisit(dependency, getDependencies, sorted, visited);
         }
 
         // 恢复现场

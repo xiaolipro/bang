@@ -1,6 +1,7 @@
 ﻿using Domain.Aggregates.BuyerAggregate;
 using Domain.Events;
 using Fake.Auditing;
+using Fake.EventBus;
 
 namespace Application.DomainEventHandlers.OrderStartedEvent;
 

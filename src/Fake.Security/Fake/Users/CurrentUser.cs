@@ -10,7 +10,7 @@ public class CurrentUser(ICurrentPrincipalAccessor currentPrincipalAccessor) : I
     /*
      * see: public virtual bool IsAuthenticated => !string.IsNullOrEmpty(this.m_authenticationType);
      */
-    public virtual bool IsAuthenticated => currentPrincipalAccessor.Principal?.Identity.IsAuthenticated ?? false;
+    public virtual bool IsAuthenticated => currentPrincipalAccessor.Principal?.Identity?.IsAuthenticated ?? false;
     public virtual Guid? Id => currentPrincipalAccessor.Principal?.FindUserId();
     public Guid? TenantId => currentPrincipalAccessor.Principal?.FindTenantId();
     public virtual string? UserName => this.FindClaimValueOrNull(FakeClaimTypes.UserName);

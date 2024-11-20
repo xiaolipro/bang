@@ -2,9 +2,6 @@
     <Import Project="../../common.props" />
     <Import Project="../../configureawait.props" />
 
-    <PropertyGroup>
-        <TargetFramework>net8.0</TargetFramework>
-    </PropertyGroup>
     <ItemGroup>
         <ProjectReference Include="..\Fake.Auditing\Fake.Auditing.csproj"/>
         <ProjectReference Include="..\Fake.Authorization\Fake.Authorization.csproj"/>

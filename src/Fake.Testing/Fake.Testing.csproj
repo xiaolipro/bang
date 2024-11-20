@@ -3,13 +3,8 @@
     <Import Project="../../common.props" />
     <Import Project="../../configureawait.props" />
 
-    <PropertyGroup>
-        <TargetFramework>netstandard2.0</TargetFramework>
-    </PropertyGroup>
-
     <ItemGroup>
       <ProjectReference Include="..\Fake.Autofac\Fake.Autofac.csproj"/>
-      <ProjectReference Include="..\Fake.Core\Fake.Core.csproj" />
     </ItemGroup>
 
 </Project>

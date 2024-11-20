@@ -1,12 +1,14 @@
 <Project>
   <PropertyGroup>
     <RootNamespace/>
+    <TargetFramework>net8.0</TargetFramework>
     <LangVersion>latest</LangVersion>
     <IsPackable>true</IsPackable>
     <OutputType>Library</OutputType>
     <Nullable>enable</Nullable>
     <WarningsAsErrors>Nullable</WarningsAsErrors>
     <NoWarn>$(NoWarn);CS1591;CS0436;NU1803</NoWarn>
+    <ImplicitUsings>enable</ImplicitUsings>
     <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
     <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
     <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
@@ -15,7 +17,7 @@
     <RepositoryType>git</RepositoryType>
     <RepositoryUrl>https://gitee.com/xiaolipro/Fake/</RepositoryUrl>
     <PackageReadmeFile>README.md</PackageReadmeFile>
-    <PackageTags>.NET Web应用框架</PackageTags>
+    <PackageTags>.NET应用框架</PackageTags>
     <!-- Include symbol files (*.pdb) in the built .nupkg -->
     <AllowedOutputExtensionsInPackageBuildOutputFolder>$(AllowedOutputExtensionsInPackageBuildOutputFolder);.pdb</AllowedOutputExtensionsInPackageBuildOutputFolder>
   </PropertyGroup>
@@ -28,5 +30,9 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
     </PackageReference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Condition="($(MSBuildProjectName) != 'Fake.Core')" Include="..\Fake.Core\Fake.Core.csproj"/>
   </ItemGroup>
 </Project>

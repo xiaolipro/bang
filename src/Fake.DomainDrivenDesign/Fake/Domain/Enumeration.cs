@@ -44,7 +44,7 @@ public abstract class Enumeration(string name, int value, string? description = 
         return Name;
     }
 
-    public int CompareTo(object obj)
+    public int CompareTo(object? obj)
     {
         var enumeration = obj as Enumeration;
         return Value.CompareTo(enumeration?.Value);
@@ -59,7 +59,7 @@ public abstract class Enumeration(string name, int value, string? description = 
         {
             return type.GetFields(BindingFlags.Public | BindingFlags.Static | BindingFlags.DeclaredOnly)
                 .Where(x => x.FieldType == type)
-                .Select(x => x.GetValue(default));
+                .Select(x => x.GetValue(default)!);
         }).Cast<T>();
     }
 

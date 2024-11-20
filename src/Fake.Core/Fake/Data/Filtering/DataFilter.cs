@@ -60,7 +60,7 @@ public class DataFilter<TFilter>(IOptions<FakeDataFilterOptions> options) : IDat
             return NullDisposable.Instance;
         }
 
-        _filter.Value.IsEnabled = true;
+        _filter.Value!.IsEnabled = true;
 
         return new DisposableWrapper(() => Disable());
     }
@@ -72,7 +72,7 @@ public class DataFilter<TFilter>(IOptions<FakeDataFilterOptions> options) : IDat
             return NullDisposable.Instance;
         }
 
-        _filter.Value.IsEnabled = false;
+        _filter.Value!.IsEnabled = false;
 
         return new DisposableWrapper(() => Enable());
     }

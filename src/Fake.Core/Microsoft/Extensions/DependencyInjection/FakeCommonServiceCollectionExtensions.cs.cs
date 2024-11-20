@@ -105,11 +105,11 @@ public static class FakeCommonServiceCollectionExtensions
         var containerBuilderType = factoryInterfaceType.GenericTypeArguments[0];
         var serviceProvider = typeof(FakeCommonServiceCollectionExtensions)
             .GetMethods()
-            .Single(m => m.Name == nameof(BuildServiceProviderFromFactory) && m.IsGenericMethod)
+            .Single(m => m is { Name: nameof(BuildServiceProviderFromFactory), IsGenericMethod: true })
             .MakeGenericMethod(containerBuilderType)
-            .Invoke(null, new object[] { services, null! });
+            .Invoke(null, [services, null!]);
 
-        return serviceProvider.To<IServiceProvider>();
+        return serviceProvider!.To<IServiceProvider>();
     }
 
     public static IServiceProvider BuildServiceProviderFromFactory<TContainerBuilder>(

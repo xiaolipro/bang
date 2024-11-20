@@ -36,7 +36,7 @@ namespace Fake.EventBus
         /// <typeparam name="THandler">处理者</typeparam>
         void AddSubscription<TEvent, THandler>()
             where TEvent : Event
-            where THandler : EventHandler<TEvent>;
+            where THandler : IEventHandler<TEvent>;
 
         #endregion
 
@@ -58,7 +58,7 @@ namespace Fake.EventBus
         /// <typeparam name="THandler"></typeparam>
         void RemoveSubscription<TEvent, THandler>()
             where TEvent : Event
-            where THandler : EventHandler<TEvent>;
+            where THandler : IEventHandler<TEvent>;
 
         /// <summary>
         /// 清除所有订阅

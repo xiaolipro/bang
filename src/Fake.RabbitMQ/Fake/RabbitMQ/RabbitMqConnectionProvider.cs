@@ -6,15 +6,15 @@ using RabbitMQ.Client;
 
 namespace Fake.RabbitMQ;
 
-public class RabbitMqConnectionPool(IOptions<FakeRabbitMqOptions> options, ILogger<RabbitMqConnectionPool> logger)
-    : IRabbitMqConnectionPool
+public class RabbitMqConnectionProvider(IOptions<FakeRabbitMqOptions> options, ILogger<RabbitMqConnectionProvider> logger)
+    : IRabbitMqConnectionProvider
 {
     private readonly FakeRabbitMqOptions _options = options.Value;
     protected ConcurrentDictionary<string, Lazy<IConnection>> Connections { get; } = new();
 
     private bool _isDisposed;
 
-    public IConnection Get(string? connectionName = null)
+    public IConnection Get(string? connectionName = null, Action<ConnectionFactory>? configure = null)
     {
         connectionName ??= _options.DefaultConnectionName;
 
@@ -24,6 +24,7 @@ public class RabbitMqConnectionPool(IOptions<FakeRabbitMqOptions> options, ILogg
                 connectionName, v => new Lazy<IConnection>(() =>
                     {
                         var connectionFactory = _options.GetOrDefault(v);
+                        configure?.Invoke(connectionFactory);
                         // 处理集群
                         var hostnames = connectionFactory.HostName.TrimEnd(';').Split(';');
                         return hostnames.Length == 1

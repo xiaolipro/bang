@@ -14,10 +14,10 @@ public class FakeAppTestModule : FakeModule
 {
     public override void ConfigureServices(ServiceConfigurationContext context)
     {
-        context.Services.AddSingleton(typeof(IEventHandler<OrderStartedDomainEvent>),
+        context.Services.AddSingleton(typeof(IEventHandler),
             typeof(ValidateOrAddBuyerAggregateWhenOrderStartedDomainEventHandler));
 
-        context.Services.AddSingleton(typeof(IEventHandler<BuyerAndPaymentMethodVerifiedDomainEvent>),
+        context.Services.AddSingleton(typeof(IEventHandler),
             typeof(UpdateOrderWhenBuyerAndPaymentMethodVerifiedDomainEventHandler));
 
         context.Services.AddTransient<AppTestDataBuilder>();

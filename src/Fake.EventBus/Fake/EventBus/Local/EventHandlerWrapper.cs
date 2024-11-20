@@ -18,7 +18,7 @@ public class EventHandlerWrapperImpl<TEvent> : EventHandlerWrapper where TEvent 
         Func<IEnumerable<EventHandlerExecutor>, Event, Task> publish)
     {
         var handlers = serviceProvider
-            .GetServices<EventHandler<TEvent>>()
+            .GetServices<IEventHandler<TEvent>>()
             .Select(handler => new EventHandlerExecutor(handler,
                 theEvent => handler.HandleAsync((TEvent)theEvent)));
 

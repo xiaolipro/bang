@@ -45,6 +45,6 @@ public static class FakeStringLocalizerExtensions
                 $"无法在{typeof(StringLocalizer<>).FullName}中找到字段{LocalizerFieldName}，可能是命名发生变更，请联系作者");
         }
 
-        return (IStringLocalizer)localizerField.GetValue(stringLocalizer);
+        return (IStringLocalizer)localizerField.GetValue(stringLocalizer)!;
     }
 }

@@ -1,5 +1,4 @@
-﻿using System;
-using System.Reflection;
+﻿using System.Reflection;
 using Autofac.Builder;
 using Fake;
 using Fake.Modularity;
@@ -35,7 +34,7 @@ public static class FakeRegistrationExtensions
         ThrowHelper.ThrowIfNull(factory, nameof(factory), $"找不到{AutofacServiceScopeFactoryClassName}！");
 
         // IServiceScopeFactory必须是单例的，平铺的，没有层级的
-        builder.RegisterType(factory)
+        builder.RegisterType(factory!)
             .As<IServiceScopeFactory>()
             .SingleInstance();
 
