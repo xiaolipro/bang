@@ -26,19 +26,16 @@ public class RabbitMqEventBus(
     private string QueueName =>
         _eventBusOptions.QueueName ?? applicationInfo.ApplicationName.TrimEnd('.') + ".Queue"; // 客户端订阅队列名称
 
-    public Task PublishAsync(Event @event)
+    public Task PublishAsync(IntegrationEvent @event)
     {
         var routingKey = @event.GetType().Name;
 
-        logger.LogTrace("Creating RabbitMQ channel for publishing event: {EventId} ({EventName})", @event.Id,
+        logger.LogDebug("Creating RabbitMQ channel for publishing event: {EventId} ({EventName})", @event.Id,
             routingKey);
 
         using var channel = rabbitMqConnectionProvider.Get(_eventBusOptions.ConnectionName).CreateModel();
 
-        var body = JsonSerializer.SerializeToUtf8Bytes(@event, @event.GetType(), new JsonSerializerOptions
-        {
-            WriteIndented = true
-        });
+        var body = SerializeMessage(@event);
 
         var properties = channel.CreateBasicProperties();
         properties.DeliveryMode = 2; // Non-persistent (1) or persistent (2).
@@ -62,8 +59,8 @@ public class RabbitMqEventBus(
                         exchange: ExchangeName,
                         routingKey: eventName);
                 }
-                StartBasicConsume(_consumerChannel);
 
+                StartBasicConsume(_consumerChannel);
             }, cancellationToken, TaskCreationOptions.LongRunning, TaskScheduler.Default);
 
         return Task.CompletedTask;
@@ -102,7 +99,7 @@ public class RabbitMqEventBus(
     /// <returns></returns>
     private async Task ProcessingEventAsync(string eventName, string message)
     {
-        logger.LogTrace("Processing RabbitMQ event: {EventName}", eventName);
+        logger.LogDebug("Processing RabbitMQ event: {EventName}", eventName);
 
         await using var scope = serviceScopeFactory.CreateAsyncScope();
 
@@ -117,7 +114,8 @@ public class RabbitMqEventBus(
 
         if (@event == null)
         {
-            logger.LogWarning("Unable to deserialize event: {EventName}, message:\n {Message}", eventName, message);
+            logger.LogWarning("Unable to deserialize integration event: {EventName}, message:\n {Message}", eventName,
+                message);
             return;
         }
 
@@ -235,7 +233,7 @@ public class RabbitMqEventBus(
                     // For more information see: https://www.rabbitmq.com/dlx.html
                     channel.BasicNack(eventArgs.DeliveryTag, multiple: false, requeue: false);
                 }
-                
+
                 channel.BasicAck(eventArgs.DeliveryTag, multiple: false);
             };
 

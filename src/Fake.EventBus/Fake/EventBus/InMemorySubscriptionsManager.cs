@@ -19,7 +19,7 @@ public class InMemorySubscriptionsManager : ISubscriptionsManager
 
     public bool IsEmpty => _subscriptions.Count == 0;
 
-    public event System.EventHandler<string>? OnEventRemoved;
+    public event EventHandler<string>? OnEventRemoved;
 
     public void AddDynamicSubscription<THandler>(string eventName)
         where THandler : IDynamicEventHandler

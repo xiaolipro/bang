@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Fake.EventBus;
+﻿namespace Fake.EventBus.Distributed;
 
 /// <summary>
 /// 集成事件

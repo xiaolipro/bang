@@ -1,4 +1,5 @@
 ﻿using Fake.EventBus;
+using Fake.EventBus.Distributed;
 
 namespace Application.IntegrationEvents;
 

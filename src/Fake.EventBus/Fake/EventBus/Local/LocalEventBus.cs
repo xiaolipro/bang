@@ -26,7 +26,7 @@ public class LocalEventBus(
 
             if (wrapper == null)
             {
-                throw new FakeException($"无法为事件{eventType}创建{nameof(EventHandlerWrapper)}");
+                throw new FakeException("Cannot create event handler wrapper.");
             }
 
             return wrapper;
@@ -42,7 +42,8 @@ public class LocalEventBus(
         // 广播事件
         foreach (var eventHandlerExecutor in eventHandlerExecutors)
         {
-            logger.LogDebug("正在处理: {Event}", @event.ToString());
+            logger.LogDebug("Processing event {EventName} with handler {EventHandlerName}",
+                @event.GetType().Name, eventHandlerExecutor.GetType().Name);
             await eventHandlerExecutor.HandleFunc(@event);
         }
     }

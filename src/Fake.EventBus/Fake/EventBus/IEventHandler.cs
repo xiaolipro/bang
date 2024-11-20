@@ -6,7 +6,7 @@ namespace Fake.EventBus;
 /// 事件处理器
 /// </summary>
 /// <typeparam name="TEvent">事件</typeparam>
-public interface IEventHandler<TEvent> : IEventHandler where TEvent : Event
+public interface IEventHandler<in TEvent> : IEventHandler where TEvent : Event
 {
     /// <summary>
     /// 处理事件
