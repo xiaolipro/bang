@@ -60,17 +60,18 @@ public class RabbitMqChannelPool(
 
         foreach (var channelWrapper in Channels.Values)
         {
-            var itemTime = clock.MeasureExecutionTime(timeout =>
+            var timeout = remainingTime;
+            var itemTime = clock.MeasureExecutionTime(() =>
                 {
                     try
                     {
-                        channelWrapper.Dispose((TimeSpan)timeout);
+                        channelWrapper.Dispose(timeout);
                     }
                     catch (Exception ex)
                     {
                         logger.LogWarning("Dispose channel error: {0}", ex.Message);
                     }
-                }, remainingTime);
+                });
 
             remainingTime = remainingTime > itemTime ? remainingTime - itemTime : TimeSpan.Zero;
         }

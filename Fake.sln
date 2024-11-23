@@ -174,6 +174,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "OTel", "OTel", "{74957A93-A
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fake.Caching.StackExchangeRedis", "src\Fake.Caching.StackExchangeRedis\Fake.Caching.StackExchangeRedis.csproj", "{2E1DE197-7CBF-410B-A0CC-C8D12176148C}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fake.EventBus.RabbitMQ.OpenTelemetry", "src\Fake.EventBus.RabbitMQ.OpenTelemetry\Fake.EventBus.RabbitMQ.OpenTelemetry.csproj", "{3D980642-F164-4E85-886D-AF5CBF15DCB8}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -398,6 +400,10 @@ Global
 		{2E1DE197-7CBF-410B-A0CC-C8D12176148C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2E1DE197-7CBF-410B-A0CC-C8D12176148C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2E1DE197-7CBF-410B-A0CC-C8D12176148C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3D980642-F164-4E85-886D-AF5CBF15DCB8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3D980642-F164-4E85-886D-AF5CBF15DCB8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3D980642-F164-4E85-886D-AF5CBF15DCB8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3D980642-F164-4E85-886D-AF5CBF15DCB8}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{A93D4EAE-90BE-4C9B-9970-5C1C8E1B994D} = {310D0E30-AC20-44C8-B0A2-155C880ED934}
@@ -469,5 +475,6 @@ Global
 		{F2BC0BDA-3EA2-42EA-A900-2A381EB650B8} = {C40D4226-6638-44D0-85C8-FC2C846A4BEB}
 		{74957A93-AD7C-40C8-851C-E2F660457A31} = {AC56DAD8-C5AB-4E41-A280-1BCC08A2BE60}
 		{2E1DE197-7CBF-410B-A0CC-C8D12176148C} = {242B5161-9E38-4BBD-9AA7-A85831F60533}
+		{3D980642-F164-4E85-886D-AF5CBF15DCB8} = {ECBC0DDA-CDD7-4239-BCF8-A5A3299A36E4}
 	EndGlobalSection
 EndGlobal

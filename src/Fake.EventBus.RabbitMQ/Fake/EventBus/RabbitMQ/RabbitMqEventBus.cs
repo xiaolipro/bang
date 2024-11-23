@@ -40,7 +40,7 @@ public class RabbitMqEventBus(
         var properties = channel.CreateBasicProperties();
         properties.DeliveryMode = 2; // Non-persistent (1) or persistent (2).
 
-        logger.LogDebug("发布事件到RabbitMQ: {Event}", @event.ToString());
+        logger.LogDebug("Publishing event: {EventId} ({EventName})", @event.Id, routingKey);
         channel.BasicPublish(exchange: ExchangeName, routingKey: routingKey, mandatory: true,
             basicProperties: properties, body: body);
 
@@ -236,8 +236,7 @@ public class RabbitMqEventBus(
 
                 channel.BasicAck(eventArgs.DeliveryTag, multiple: false);
             };
-
-        // 手动ack
+        
         channel.BasicConsume(queue: QueueName, autoAck: false, consumer: consumer);
     }
 

@@ -9,4 +9,8 @@
       <ProjectReference Include="..\Fake.RabbitMQ\Fake.RabbitMQ.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <PackageReference Include="Polly.Core" Version="8.5.0" />
+    </ItemGroup>
+
 </Project>
