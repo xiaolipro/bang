@@ -1,6 +1,4 @@
-﻿using System.Text.Json.Serialization.Metadata;
-
-namespace Fake.EventBus.RabbitMQ;
+﻿namespace Fake.EventBus.RabbitMQ;
 
 public class RabbitMqEventBusOptions
 {
@@ -51,18 +49,4 @@ public class RabbitMqEventBusOptions
     public int QueueMaxLength { get; set; }
 
     #endregion
-
-    /// <summary>
-    /// 事件总线注册的事件, 事件名称:事件类型
-    /// </summary>
-    public Dictionary<string, Type> Events { get; } = [];
-
-    public JsonSerializerOptions JsonSerializerOptions { get; set; } = DefaultSerializerOptions;
-
-    private static readonly JsonSerializerOptions DefaultSerializerOptions = new()
-    {
-        TypeInfoResolver = JsonSerializer.IsReflectionEnabledByDefault
-            ? new DefaultJsonTypeInfoResolver()
-            : JsonTypeInfoResolver.Combine()
-    };
 }

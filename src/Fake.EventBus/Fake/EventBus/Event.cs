@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Fake.EventBus;
+﻿namespace Fake.EventBus;
 
 [Serializable]
 public abstract class Event

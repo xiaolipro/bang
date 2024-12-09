@@ -14,11 +14,13 @@ public class RabbitMqEventBus(
     IRabbitMqConnectionProvider rabbitMqConnectionProvider,
     ILogger<RabbitMqEventBus> logger,
     IServiceScopeFactory serviceScopeFactory,
+    IOptions<EventBusSubscriptionOptions> subscriptionOptions,
     IOptions<RabbitMqEventBusOptions> eventBusOptions,
     IApplicationInfo applicationInfo
 ) : IDistributedEventBus, IDisposable, IHostedService
 {
     private readonly RabbitMqEventBusOptions _eventBusOptions = eventBusOptions.Value;
+    private readonly EventBusSubscriptionOptions _subscriptionOptions = subscriptionOptions.Value;
     private string ExchangeName => _eventBusOptions.ExchangeName; // 事件投递的交换机
 
     private IModel? _consumerChannel; // 消费者专用通道
@@ -52,7 +54,7 @@ public class RabbitMqEventBus(
         _ = Task.Factory.StartNew(() =>
             {
                 _consumerChannel = CreateConsumerChannel();
-                foreach (var (eventName, _) in _eventBusOptions.Events)
+                foreach (var (eventName, _) in _subscriptionOptions.EventTypes)
                 {
                     _consumerChannel.QueueBind(
                         queue: QueueName,
@@ -71,15 +73,17 @@ public class RabbitMqEventBus(
         return Task.CompletedTask;
     }
 
-    protected virtual IntegrationEvent? DeserializeMessage(string message, Type eventType)
+    protected virtual IntegrationEvent DeserializeMessage(string message, Type eventType)
     {
-        return JsonSerializer.Deserialize(message, eventType, _eventBusOptions.JsonSerializerOptions) as
+        var res = JsonSerializer.Deserialize(message, eventType, _subscriptionOptions.JsonSerializerOptions) as
             IntegrationEvent;
+        
+        return res ?? throw new InvalidOperationException("Failed to deserialize message");
     }
 
     protected virtual byte[] SerializeMessage(IntegrationEvent @event)
     {
-        return JsonSerializer.SerializeToUtf8Bytes(@event, @event.GetType(), _eventBusOptions.JsonSerializerOptions);
+        return JsonSerializer.SerializeToUtf8Bytes(@event, @event.GetType(), _subscriptionOptions.JsonSerializerOptions);
     }
 
 
@@ -103,7 +107,7 @@ public class RabbitMqEventBus(
 
         await using var scope = serviceScopeFactory.CreateAsyncScope();
 
-        if (!_eventBusOptions.Events.TryGetValue(eventName, out var eventType))
+        if (!_subscriptionOptions.EventTypes.TryGetValue(eventName, out var eventType))
         {
             logger.LogWarning("Unable to resolve event type for event name {EventName}", eventName);
             return;
@@ -112,20 +116,9 @@ public class RabbitMqEventBus(
         // deserialize th event
         var @event = DeserializeMessage(message, eventType);
 
-        if (@event == null)
-        {
-            logger.LogWarning("Unable to deserialize integration event: {EventName}, message:\n {Message}", eventName,
-                message);
-            return;
-        }
-
         // 广播
-        var handlers = scope.ServiceProvider.GetKeyedServices<IEventHandler>(eventName);
-
-        foreach (var handler in handlers)
+        foreach (var handler in scope.ServiceProvider.GetKeyedServices<IEventHandler>(eventType))
         {
-            // see：https://stackoverflow.com/questions/22645024/when-would-i-use-task-yield
-            // await Task.Yield(); -> long task
             await handler.HandleAsync(@event);
         }
     }
@@ -214,7 +207,7 @@ public class RabbitMqEventBus(
         logger.LogDebug("Starting rabbitmq eventbus basic consume");
 
         // 创建异步消费者
-        var consumer = new AsyncEventingBasicConsumer(_consumerChannel);
+        var consumer = new AsyncEventingBasicConsumer(channel);
         consumer.Received += async (_, eventArgs) =>
             {
                 string eventName = eventArgs.RoutingKey;

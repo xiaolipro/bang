@@ -2,6 +2,7 @@
 using Domain.Events;
 using Fake;
 using Fake.Auditing;
+using Fake.EventBus;
 
 namespace Application.DomainEventHandlers.BuyerAndPaymentMethodVerifiedEvent;
 
@@ -9,8 +10,7 @@ public class
     UpdateOrderWhenBuyerAndPaymentMethodVerifiedDomainEventHandler(
         IOrderRepository orderRepository,
         ILogger<UpdateOrderWhenBuyerAndPaymentMethodVerifiedDomainEventHandler> logger)
-    : Fake.EventBus.IEventHandler<
-        BuyerAndPaymentMethodVerifiedDomainEvent>
+    : IEventHandler<BuyerAndPaymentMethodVerifiedDomainEvent>
 {
     public int Order { get; set; }
 
