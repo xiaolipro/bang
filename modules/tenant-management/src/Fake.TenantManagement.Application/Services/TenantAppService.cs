@@ -12,24 +12,24 @@ namespace Fake.TenantManagement.Application.Services;
 public class TenantAppService(ITenantRepository tenantRepository, TenantManager tenantManager)
     : TenantManagementAppServiceBase, ITenantAppService
 {
-    public async Task<TenantPaginatedItem> GetAsync(Guid id)
+    public async Task<TenantPagedItem> GetAsync(Guid id)
     {
         var existedTenant = await tenantRepository.FirstOrDefaultAsync(x => x.Id == id);
 
         if (existedTenant == null) throw new DomainException(L[FakeTenantManagementResource.TenantNotExists, id]);
 
-        return ObjectMapper.Map<Tenant, TenantPaginatedItem>(existedTenant);
+        return ObjectMapper.Map<Tenant, TenantPagedItem>(existedTenant);
     }
 
-    public async Task<PaginatedResult<TenantPaginatedItem>> GetPagedListAsync(GetTenantPaginatedRequest input)
+    public async Task<PagedResult<TenantPagedItem>> GetPagedListAsync(GetTenantPagedRequest input)
     {
         Expression<Func<Tenant, bool>> query = x => input.Name.IsNullOrWhiteSpace() ? default : x.Name.Contains(x.Name);
-        var paginatedList = await tenantRepository.GetPaginatedListAsync(query);
+        var pagedList = await tenantRepository.GetPagedListAsync(query);
         var totalCount = await tenantRepository.CountAsync(query);
 
-        return new PaginatedResult<TenantPaginatedItem>(
+        return new PagedResult<TenantPagedItem>(
             totalCount,
-            ObjectMapper.Map<IReadOnlyList<Tenant>, IReadOnlyList<TenantPaginatedItem>>(paginatedList)
+            ObjectMapper.Map<IReadOnlyList<Tenant>, IReadOnlyList<TenantPagedItem>>(pagedList)
         );
     }
 

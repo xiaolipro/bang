@@ -5,5 +5,5 @@ namespace Fake.TenantManagement.Domain.TenantAggregate;
 public interface ITenantRepository : IRepository<Tenant>
 {
     // Task<Tenant?> FindByNameAsync(string name);
-    // Task<PaginatedResult<Tenant>> GetPagedListAsync(GetTenantPagedQuery query);
+    // Task<PagedResult<Tenant>> GetPagedListAsync(GetTenantPagedQuery query);
 }

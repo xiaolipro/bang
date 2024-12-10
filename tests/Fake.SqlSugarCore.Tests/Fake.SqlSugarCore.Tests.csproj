@@ -1,0 +1,14 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <Import Project="..\..\common.test.props"/>
+
+    <ItemGroup>
+        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="$(MicrosoftNETTestSdkPackageVersion)"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\..\src\Fake.SqlSugarCore\Fake.SqlSugarCore.csproj"/>
+        <ProjectReference Include="..\Fake.AppTests\Fake.AppTests.csproj"/>
+    </ItemGroup>
+
+</Project>

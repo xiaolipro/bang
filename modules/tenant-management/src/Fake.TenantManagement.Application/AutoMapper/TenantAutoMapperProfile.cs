@@ -8,6 +8,6 @@ public class TenantAutoMapperProfile : Profile
 {
     public TenantAutoMapperProfile()
     {
-        CreateMap<Tenant, TenantPaginatedItem>();
+        CreateMap<Tenant, TenantPagedItem>();
     }
 }

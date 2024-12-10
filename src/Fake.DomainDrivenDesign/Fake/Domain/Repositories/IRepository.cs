@@ -24,7 +24,7 @@ public interface IRepository<TEntity> : IRepository where TEntity : class, IAggr
         Dictionary<string, bool>? sorting = null,
         CancellationToken cancellationToken = default);
 
-    Task<List<TEntity>> GetPaginatedListAsync(
+    Task<List<TEntity>> GetPagedListAsync(
         Expression<Func<TEntity, bool>>? predicate = null,
         int pageIndex = 1,
         int pageSize = 20,

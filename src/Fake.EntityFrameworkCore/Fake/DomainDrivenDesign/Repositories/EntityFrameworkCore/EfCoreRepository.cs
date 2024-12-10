@@ -99,14 +99,14 @@ public class EfCoreRepository<TDbContext, TEntity> : RepositoryBase<TEntity>,
         return await query.WhereIf(predicate != null, predicate).OrderBy(sorting).ToListAsync(cancellationToken);
     }
 
-    public override async Task<List<TEntity>> GetPaginatedListAsync(Expression<Func<TEntity, bool>>? predicate,
+    public override async Task<List<TEntity>> GetPagedListAsync(Expression<Func<TEntity, bool>>? predicate,
         int pageIndex = 1, int pageSize = 20, Dictionary<string, bool>? sorting = null,
         CancellationToken cancellationToken = default)
     {
-        return await GetPaginatedListAsync(predicate, pageIndex, pageSize, sorting, false, cancellationToken);
+        return await GetPagedListAsync(predicate, pageIndex, pageSize, sorting, false, cancellationToken);
     }
 
-    public virtual async Task<List<TEntity>> GetPaginatedListAsync(
+    public virtual async Task<List<TEntity>> GetPagedListAsync(
         Expression<Func<TEntity, bool>>? predicate,
         int pageIndex = 1,
         int pageSize = 20,

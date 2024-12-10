@@ -2,7 +2,7 @@ using Fake.Application.Dtos;
 
 namespace Fake.TenantManagement.Application.Contracts.Dtos;
 
-public class GetTenantPaginatedRequest: PagedRequest
+public class GetTenantPagedRequest: PagedRequest
 {
     /// <summary>
     /// 租户名称

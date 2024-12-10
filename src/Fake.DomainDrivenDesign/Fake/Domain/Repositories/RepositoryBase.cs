@@ -50,7 +50,7 @@ public abstract class RepositoryBase<TEntity> : IRepository<TEntity>
         Dictionary<string, bool>? sorting = null,
         CancellationToken cancellationToken = default);
 
-    public abstract Task<List<TEntity>> GetPaginatedListAsync(
+    public abstract Task<List<TEntity>> GetPagedListAsync(
         Expression<Func<TEntity, bool>>? predicate,
         int pageIndex = 1,
         int pageSize = 20,

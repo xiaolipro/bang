@@ -26,7 +26,7 @@ public interface IEfCoreRepository<TDbContext, TEntity> : IRepository<TEntity>
         bool isInclude = true,
         CancellationToken cancellationToken = default);
 
-    public Task<List<TEntity>> GetPaginatedListAsync(
+    public Task<List<TEntity>> GetPagedListAsync(
         Expression<Func<TEntity, bool>>? predicate,
         int pageIndex = 1,
         int pageSize = 20,
