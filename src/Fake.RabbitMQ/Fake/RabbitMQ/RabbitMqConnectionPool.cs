@@ -1,20 +1,25 @@
-﻿using System;
-using System.Collections.Concurrent;
+﻿using System.Collections.Concurrent;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using RabbitMQ.Client;
 
 namespace Fake.RabbitMQ;
 
-public class RabbitMqConnectionProvider(IOptions<FakeRabbitMqOptions> options, ILogger<RabbitMqConnectionProvider> logger)
-    : IRabbitMqConnectionProvider
+
+/// <summary>
+/// RabbitMQ 的 Connection 对象是线程安全的。
+/// </summary>
+/// <param name="options"></param>
+/// <param name="logger"></param>
+public class RabbitMqConnectionPool(IOptions<FakeRabbitMqOptions> options, ILogger<RabbitMqConnectionPool> logger)
+    : IRabbitMqConnectionPool
 {
     private readonly FakeRabbitMqOptions _options = options.Value;
     protected ConcurrentDictionary<string, Lazy<IConnection>> Connections { get; } = new();
 
     private bool _isDisposed;
 
-    public IConnection Get(string? connectionName = null, Action<ConnectionFactory>? configure = null)
+    public IConnection Get(string? connectionName = null)
     {
         connectionName ??= _options.DefaultConnectionName;
 
@@ -24,7 +29,6 @@ public class RabbitMqConnectionProvider(IOptions<FakeRabbitMqOptions> options, I
                 connectionName, v => new Lazy<IConnection>(() =>
                     {
                         var connectionFactory = _options.GetOrDefault(v);
-                        configure?.Invoke(connectionFactory);
                         // 处理集群
                         var hostnames = connectionFactory.HostName.TrimEnd(';').Split(';');
                         return hostnames.Length == 1

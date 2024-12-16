@@ -11,7 +11,6 @@ public class FakeRabbitMqOptions
     /// </summary>
     public string DefaultConnectionName { get; set; } = "Default";
     
-    
     /// <summary>
     /// Channel池销毁等待时间
     /// </summary>

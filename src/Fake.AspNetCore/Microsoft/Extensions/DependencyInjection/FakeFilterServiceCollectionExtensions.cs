@@ -1,13 +1,12 @@
 ﻿using Fake.AspNetCore.ExceptionHandling;
+using Fake.AspNetCore.Mvc.Filters;
 using Fake.Modularity;
 using Fake.UnitOfWork;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Localization;
 
-namespace Fake.AspNetCore.Mvc.Filters;
+namespace Microsoft.Extensions.DependencyInjection;
 
 public static class FakeFilterServiceCollectionExtensions
 {

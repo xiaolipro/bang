@@ -11,7 +11,7 @@ namespace Fake.EventBus.RabbitMQ;
 /// <para>一个客户端独享一个消费者通道</para>
 /// </remarks>
 public class RabbitMqEventBus(
-    IRabbitMqConnectionProvider rabbitMqConnectionProvider,
+    IRabbitMqConnectionPool rabbitMqConnectionPool,
     ILogger<RabbitMqEventBus> logger,
     IServiceScopeFactory serviceScopeFactory,
     IOptions<EventBusSubscriptionOptions> subscriptionOptions,
@@ -35,7 +35,7 @@ public class RabbitMqEventBus(
         logger.LogDebug("Creating RabbitMQ channel for publishing event: {EventId} ({EventName})", @event.Id,
             routingKey);
 
-        using var channel = rabbitMqConnectionProvider.Get(_eventBusOptions.ConnectionName).CreateModel();
+        using var channel = rabbitMqConnectionPool.Get(_eventBusOptions.ConnectionName).CreateModel();
 
         var body = SerializeMessage(@event);
 
@@ -130,7 +130,7 @@ public class RabbitMqEventBus(
     private IModel CreateConsumerChannel()
     {
         logger.LogDebug("Creating rabbitmq eventbus consumer channel");
-        var channel = rabbitMqConnectionProvider.Get(_eventBusOptions.ConnectionName, factory =>
+        var channel = rabbitMqConnectionPool.Get(_eventBusOptions.ConnectionName, factory =>
             {
                 // see：https://github.com/rabbitmq/rabbitmq-dotnet-client/issues/1112
                 factory.DispatchConsumersAsync = true;

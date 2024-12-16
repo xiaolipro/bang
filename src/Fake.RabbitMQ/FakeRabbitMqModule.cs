@@ -11,7 +11,7 @@ public class FakeRabbitMqModule: FakeModule
         var configuration = context.Services.GetConfiguration();
         context.Services.Configure<FakeRabbitMqOptions>(configuration.GetSection("RabbitMQ"));
 
-        context.Services.AddSingleton<IRabbitMqConnectionProvider, RabbitMqConnectionProvider>();
+        context.Services.AddSingleton<IRabbitMqConnectionPool, RabbitMqConnectionPool>();
         context.Services.AddSingleton<IRabbitMqChannelPool, RabbitMqChannelPool>();
     }
 }

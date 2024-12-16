@@ -7,14 +7,14 @@ using RabbitMQ.Client;
 namespace Fake.RabbitMQ;
 
 public class RabbitMqChannelPool(
-    IRabbitMqConnectionProvider rabbitMqConnectionProvider,
+    IRabbitMqConnectionPool rabbitMqConnectionPool,
     ILogger<RabbitMqChannelPool> logger,
     IFakeClock clock,
     IOptions<FakeRabbitMqOptions> options) : IRabbitMqChannelPool
 {
     private bool _isDisposed;
     protected ConcurrentDictionary<string, ChannelWrapper> Channels { get; } = new();
-
+    
     public virtual IChannelAccessor Acquire(string? channelName = null, string? connectionName = null,
         Action<IModel>? configureChannel = null)
     {
@@ -29,12 +29,13 @@ public class RabbitMqChannelPool(
             channelName,
             _ =>
                 {
-                    var wrapper = new ChannelWrapper(rabbitMqConnectionProvider.Get(connectionName).CreateModel());
+                    var wrapper = new ChannelWrapper(rabbitMqConnectionPool.Get(connectionName).CreateModel());
                     configureChannel?.Invoke(wrapper.Channel);
                     return wrapper;
                 }
         );
-
+        
+        // 与 Connection 不同，Channel 对象在 RabbitMQ 中是非线程安全的，因此需要加锁
         wrapper.Acquire();
 
         return new ChannelAccessor(channelName, wrapper);
