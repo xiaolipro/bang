@@ -130,11 +130,7 @@ public class RabbitMqEventBus(
     private IModel CreateConsumerChannel()
     {
         logger.LogDebug("Creating rabbitmq eventbus consumer channel");
-        var channel = rabbitMqConnectionPool.Get(_eventBusOptions.ConnectionName, factory =>
-            {
-                // see：https://github.com/rabbitmq/rabbitmq-dotnet-client/issues/1112
-                factory.DispatchConsumersAsync = true;
-            }).CreateModel();
+        var channel = rabbitMqConnectionPool.Get(_eventBusOptions.ConnectionName).CreateModel();
 
         var arguments = new Dictionary<string, object>();
 
