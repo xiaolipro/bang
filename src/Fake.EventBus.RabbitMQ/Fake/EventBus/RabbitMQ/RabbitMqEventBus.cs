@@ -1,5 +1,9 @@
-﻿using Fake.EventBus.Distributed;
+﻿using System.Net.Sockets;
+using Fake.EventBus.Distributed;
 using Microsoft.Extensions.Hosting;
+using Polly;
+using Polly.Retry;
+using RabbitMQ.Client.Exceptions;
 
 namespace Fake.EventBus.RabbitMQ;
 
@@ -21,12 +25,16 @@ public class RabbitMqEventBus(
 {
     private readonly RabbitMqEventBusOptions _eventBusOptions = eventBusOptions.Value;
     private readonly EventBusSubscriptionOptions _subscriptionOptions = subscriptionOptions.Value;
-    private string ExchangeName => _eventBusOptions.ExchangeName; // 事件投递的交换机
 
+    private readonly ResiliencePipeline _pipeline = CreateResiliencePipeline(eventBusOptions.Value.RetryCount);
+
+    private readonly IConnection _connection = rabbitMqConnectionPool.Get(eventBusOptions.Value.ConnectionName);
     private IModel? _consumerChannel; // 消费者专用通道
 
-    private string QueueName =>
-        _eventBusOptions.QueueName ?? applicationInfo.ApplicationName.TrimEnd('.') + ".Queue"; // 客户端订阅队列名称
+    private readonly string _exchangeName = eventBusOptions.Value.ExchangeName; // 事件投递的交换机
+
+    private readonly string _queueName = (eventBusOptions.Value.QueueName ?? applicationInfo.ApplicationName)
+        .TrimEnd('.') + ".Queue"; // 客户端订阅队列名称
 
     public Task PublishAsync(IntegrationEvent @event)
     {
@@ -35,16 +43,19 @@ public class RabbitMqEventBus(
         logger.LogDebug("Creating RabbitMQ channel for publishing event: {EventId} ({EventName})", @event.Id,
             routingKey);
 
-        using var channel = rabbitMqConnectionPool.Get(_eventBusOptions.ConnectionName).CreateModel();
+        using var channel = _connection.CreateModel();
 
         var body = SerializeMessage(@event);
 
         var properties = channel.CreateBasicProperties();
         properties.DeliveryMode = 2; // Non-persistent (1) or persistent (2).
 
-        logger.LogDebug("Publishing event: {EventId} ({EventName})", @event.Id, routingKey);
-        channel.BasicPublish(exchange: ExchangeName, routingKey: routingKey, mandatory: true,
-            basicProperties: properties, body: body);
+        _pipeline.Execute(chan =>
+            {
+                logger.LogDebug("Publishing event to RabbitMQ: {EventId} ({EventName})", @event.Id, routingKey);
+                chan.BasicPublish(exchange: _exchangeName, routingKey: routingKey, mandatory: true,
+                    basicProperties: properties, body: body);
+            }, channel);
 
         return Task.CompletedTask;
     }
@@ -57,8 +68,8 @@ public class RabbitMqEventBus(
                 foreach (var (eventName, _) in _subscriptionOptions.EventTypes)
                 {
                     _consumerChannel.QueueBind(
-                        queue: QueueName,
-                        exchange: ExchangeName,
+                        queue: _queueName,
+                        exchange: _exchangeName,
                         routingKey: eventName);
                 }
 
@@ -77,15 +88,15 @@ public class RabbitMqEventBus(
     {
         var res = JsonSerializer.Deserialize(message, eventType, _subscriptionOptions.JsonSerializerOptions) as
             IntegrationEvent;
-        
+
         return res ?? throw new InvalidOperationException("Failed to deserialize message");
     }
 
     protected virtual byte[] SerializeMessage(IntegrationEvent @event)
     {
-        return JsonSerializer.SerializeToUtf8Bytes(@event, @event.GetType(), _subscriptionOptions.JsonSerializerOptions);
+        return JsonSerializer.SerializeToUtf8Bytes(@event, @event.GetType(),
+            _subscriptionOptions.JsonSerializerOptions);
     }
-
 
     public void Dispose()
     {
@@ -130,6 +141,8 @@ public class RabbitMqEventBus(
     private IModel CreateConsumerChannel()
     {
         logger.LogDebug("Creating rabbitmq eventbus consumer channel");
+
+        // tips: can't use using, because the channel will be disposed in the callback exception
         var channel = rabbitMqConnectionPool.Get(_eventBusOptions.ConnectionName).CreateModel();
 
         var arguments = new Dictionary<string, object>();
@@ -141,8 +154,8 @@ public class RabbitMqEventBus(
          */
         if (_eventBusOptions.EnableDlx)
         {
-            string dlxExchangeName = "DLX." + ExchangeName;
-            string dlxQueueName = "DLX." + QueueName;
+            string dlxExchangeName = "DLX." + _exchangeName;
+            string dlxQueueName = "DLX." + _queueName;
             string dlxRouteKey = dlxQueueName;
 
             logger.LogDebug("Binding DLX exchange: {DlxExchangeName}, queue: {DlxQueueName}, routeKey: {DlxRouteKey}",
@@ -166,8 +179,8 @@ public class RabbitMqEventBus(
             }
         }
 
-        channel.ExchangeDeclare(exchange: ExchangeName, type: ExchangeType.Direct);
-        channel.QueueDeclare(queue: QueueName, durable: true, exclusive: false, autoDelete: false,
+        channel.ExchangeDeclare(exchange: _exchangeName, type: ExchangeType.Direct);
+        channel.QueueDeclare(queue: _queueName, durable: true, exclusive: false, autoDelete: false,
             arguments: arguments);
 
         /*
@@ -225,8 +238,28 @@ public class RabbitMqEventBus(
 
                 channel.BasicAck(eventArgs.DeliveryTag, multiple: false);
             };
-        
-        channel.BasicConsume(queue: QueueName, autoAck: false, consumer: consumer);
+
+        channel.BasicConsume(queue: _queueName, autoAck: false, consumer: consumer);
+    }
+
+    static ResiliencePipeline CreateResiliencePipeline(int retryCount)
+    {
+        // See https://www.pollydocs.org/strategies/retry.html
+        var retryOptions = new RetryStrategyOptions
+        {
+            ShouldHandle = new PredicateBuilder().Handle<BrokerUnreachableException>().Handle<SocketException>(),
+            MaxRetryAttempts = retryCount,
+            DelayGenerator = context => ValueTask.FromResult(GenerateDelay(context.AttemptNumber))
+        };
+
+        return new ResiliencePipelineBuilder()
+            .AddRetry(retryOptions)
+            .Build();
+
+        static TimeSpan? GenerateDelay(int attempt)
+        {
+            return TimeSpan.FromSeconds(Math.Pow(2, attempt));
+        }
     }
 
     #endregion

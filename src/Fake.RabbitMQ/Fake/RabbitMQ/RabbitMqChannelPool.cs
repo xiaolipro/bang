@@ -26,7 +26,7 @@ public class RabbitMqChannelPool(
         channelName ??= connectionName ?? options.Value.DefaultConnectionName;
 
         var wrapper = Channels.GetOrAdd(
-            channelName,
+            $"{connectionName}_{channelName}",
             _ =>
                 {
                     var wrapper = new ChannelWrapper(rabbitMqConnectionPool.Get(connectionName).CreateModel());
@@ -39,6 +39,19 @@ public class RabbitMqChannelPool(
         wrapper.Acquire();
 
         return new ChannelAccessor(channelName, wrapper);
+    }
+
+    public virtual bool Release(string channelName, string? connectionName = null)
+    {
+        var key = $"{connectionName}_{channelName}";
+        if (Channels.TryGetValue(key, out var wrapper))
+        {
+            wrapper.Channel.Dispose();
+            Channels.TryRemove(key, out _);
+            return true;
+        }
+
+        return false;
     }
 
     public virtual void Dispose()

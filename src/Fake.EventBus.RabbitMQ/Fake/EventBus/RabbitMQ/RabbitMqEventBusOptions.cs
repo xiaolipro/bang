@@ -6,6 +6,11 @@ public class RabbitMqEventBusOptions
     /// RabbitMQ连接名，若为空则使用默认连接<see cref="FakeRabbitMqOptions.DefaultConnectionName"/>
     /// </summary>
     public string? ConnectionName { get; set; }
+    
+    /// <summary>
+    /// 重试次数
+    /// </summary>
+    public int RetryCount { get; set; } = 10;
 
     /// <summary>
     /// 事件总线交换机名称
