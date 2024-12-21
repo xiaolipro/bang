@@ -11,10 +11,8 @@ public interface IRabbitMqChannelPool : IDisposable
     /// </summary>
     /// <param name="channelName">通道名称</param>
     /// <param name="connectionName">连接名称</param>
-    /// <param name="configureChannel">初始化通道</param>
     /// <returns></returns>
-    IChannelAccessor Acquire(string? channelName = null, string? connectionName = null,
-        Action<IModel>? configureChannel = null);
+    IChannelAccessor Acquire(string channelName = "", string? connectionName = null);
     
     /// <summary>
     /// 释放 <see cref="IModel"/> 对象，从池中移除。
@@ -22,5 +20,5 @@ public interface IRabbitMqChannelPool : IDisposable
     /// <param name="channelName"></param>
     /// <param name="connectionName"></param>
     /// <returns></returns>
-    bool Release(string channelName, string? connectionName = null);
+    bool Release(string channelName = "", string? connectionName = null);
 }

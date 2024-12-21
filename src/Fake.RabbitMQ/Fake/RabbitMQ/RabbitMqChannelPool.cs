@@ -15,24 +15,17 @@ public class RabbitMqChannelPool(
     private bool _isDisposed;
     protected ConcurrentDictionary<string, ChannelWrapper> Channels { get; } = new();
     
-    public virtual IChannelAccessor Acquire(string? channelName = null, string? connectionName = null,
-        Action<IModel>? configureChannel = null)
+    public virtual IChannelAccessor Acquire(string channelName = "", string? connectionName = null)
     {
         if (_isDisposed)
         {
             throw new ObjectDisposedException(nameof(RabbitMqChannelPool));
         }
 
-        channelName ??= connectionName ?? options.Value.DefaultConnectionName;
-
+        var key = $"{connectionName}_{channelName}";
         var wrapper = Channels.GetOrAdd(
-            $"{connectionName}_{channelName}",
-            _ =>
-                {
-                    var wrapper = new ChannelWrapper(rabbitMqConnectionPool.Get(connectionName).CreateModel());
-                    configureChannel?.Invoke(wrapper.Channel);
-                    return wrapper;
-                }
+            key,
+            _ => new ChannelWrapper(rabbitMqConnectionPool.Get(connectionName).CreateModel())
         );
         
         // 与 Connection 不同，Channel 对象在 RabbitMQ 中是非线程安全的，因此需要加锁
@@ -41,7 +34,7 @@ public class RabbitMqChannelPool(
         return new ChannelAccessor(channelName, wrapper);
     }
 
-    public virtual bool Release(string channelName, string? connectionName = null)
+    public virtual bool Release(string channelName = "", string? connectionName = null)
     {
         var key = $"{connectionName}_{channelName}";
         if (Channels.TryGetValue(key, out var wrapper))
