@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using RabbitMQ.Client;
+﻿using RabbitMQ.Client;
 
 namespace Fake.RabbitMQ;
 
@@ -21,13 +19,13 @@ public class FakeRabbitMqOptions
     public ConnectionFactory Default
     {
         get => Connections[DefaultConnectionName];
-        private set => Connections[DefaultConnectionName] = value;
+        private init => Connections[DefaultConnectionName] = value;
     }
 
     public FakeRabbitMqOptions()
     {
+        Connections = new Dictionary<string, ConnectionFactory>();
         Default = new ConnectionFactory();
-        Connections = new();
     }
 
     public ConnectionFactory GetOrDefault(string connectionName)

@@ -1,0 +1,10 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <Import Project="..\..\common.test.props" />
+    
+    <ItemGroup>
+        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="$(MicrosoftNETTestSdkPackageVersion)" />
+      <ProjectReference Include="..\..\src\Fake.EventBus.RabbitMQ\Fake.EventBus.RabbitMQ.csproj" />
+    </ItemGroup>
+
+</Project>
