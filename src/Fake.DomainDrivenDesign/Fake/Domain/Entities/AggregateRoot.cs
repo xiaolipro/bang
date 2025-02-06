@@ -5,7 +5,7 @@ using Fake.IdGenerators.GuidGenerator;
 namespace Fake.Domain.Entities;
 
 [Serializable]
-public abstract class AggregateRoot : Entity, IAggregateRoot, IHasDomainEvent
+public abstract class AggregateRoot : Entity, IAggregateRoot
 {
     private List<DomainEvent>? _domainEvents;
 
@@ -38,7 +38,7 @@ public abstract class AggregateRoot : Entity, IAggregateRoot, IHasDomainEvent
 }
 
 [Serializable]
-public abstract class AggregateRoot<TKey> : Entity<TKey>, IAggregateRoot<TKey>, IHasDomainEvent
+public abstract class AggregateRoot<TKey> : Entity<TKey>, IAggregateRoot<TKey> where TKey : struct
 {
     private List<DomainEvent>? _domainEvents;
 

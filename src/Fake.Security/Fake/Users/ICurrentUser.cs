@@ -1,5 +1,4 @@
-﻿using System;
-using System.Security.Claims;
+﻿using System.Security.Claims;
 
 namespace Fake.Users;
 
@@ -8,7 +7,7 @@ public interface ICurrentUser
     bool IsAuthenticated { get; }
 
     /// <summary>
-    /// 用户唯一标识
+    /// 用户id
     /// </summary>
     Guid? Id { get; }
     
@@ -28,4 +27,11 @@ public interface ICurrentUser
     Claim? FindClaimOrNull(string claimType);
 
     Claim[] FindClaims(string claimType);
+    
+    /// <summary>
+    /// 当用户id不是Guid类型时，可以通过此方法获取用户id
+    /// </summary>
+    /// <typeparam name="TUserId"></typeparam>
+    /// <returns></returns>
+    TUserId? GetUserIdOrNull<TUserId>() where TUserId : struct;
 }

@@ -1,4 +1,6 @@
-﻿namespace Fake.Domain.Entities;
+﻿using Fake.Domain.Events;
+
+namespace Fake.Domain.Entities;
 
 /*
  * 聚合包装一组高度相关的对象，作为一个数据修改的单元。
@@ -9,7 +11,7 @@
 /// 定义聚合根，复合主键用这个
 /// 其他情况尽可能使用 <see cref="IAggregateRoot{TKey}"/>
 /// </summary>
-public interface IAggregateRoot : IEntity
+public interface IAggregateRoot : IEntity, IHasDomainEvent
 {
     /// <summary>
     /// 并发戳
@@ -21,6 +23,4 @@ public interface IAggregateRoot : IEntity
 /// 定义聚合根，单主键用这个
 /// </summary>
 /// <typeparam name="TKey">实体主键类型</typeparam>
-public interface IAggregateRoot<TKey> : IEntity<TKey>, IAggregateRoot
-{
-}
+public interface IAggregateRoot<out TKey> : IEntity<TKey>, IAggregateRoot where TKey : struct;

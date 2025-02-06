@@ -10,13 +10,8 @@ public abstract class Entity : IEntity
         return $"[实体: {GetType().Name}] Keys：{string.Join(", ", GetKeys())}";
     }
 
-    public bool IsTransient => EntityHelper.IsTransientEntity(this);
-
-    /// <summary>
-    /// 实体相等性比较
-    /// </summary>
-    /// <param name="other"></param>
-    /// <returns></returns>
+    public bool IsTransient() => EntityHelper.IsTransientEntity(this);
+    
     public bool EntityEquals(IEntity? other)
     {
         return EntityHelper.EntityEquals(this, other);
@@ -28,12 +23,12 @@ public abstract class Entity : IEntity
 /// </summary>
 /// <typeparam name="TKey">实体唯一标识类型</typeparam>
 [Serializable]
-public abstract class Entity<TKey> : Entity, IEntity<TKey>
+public abstract class Entity<TKey> : Entity, IEntity<TKey> where TKey : struct
 {
     /// <summary>
     /// 实体唯一标识
     /// </summary>
-    public virtual TKey Id { get; private set; } = default!;
+    public virtual TKey Id { get; private set; }
 
     protected Entity()
     {
@@ -48,7 +43,7 @@ public abstract class Entity<TKey> : Entity, IEntity<TKey>
 
     public override object[] GetKeys()
     {
-        return new object[] { Id! };
+        return [Id];
     }
 
     public override string ToString()

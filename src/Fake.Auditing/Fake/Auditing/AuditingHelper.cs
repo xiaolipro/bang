@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
+using System.Security.Claims;
 using System.Text.Json;
 using System.Text.Json.Serialization.Metadata;
 using System.Threading;
@@ -63,7 +64,7 @@ public class AuditingHelper(
         var auditLog = new AuditLogInfo()
         {
             ApplicationName = FakeAuditingOptions.ApplicationName,
-            UserId = CurrentUser.Id,
+            UserId = CurrentUser.FindClaimValueOrNull(ClaimTypes.NameIdentifier),
             UserName = CurrentUser.UserName,
             ExecutionTime = FakeClock.Now,
         };

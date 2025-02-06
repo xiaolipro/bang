@@ -15,15 +15,21 @@ public interface IEntity
     /// <summary>
     /// 是否为临时实体，表示还未持久化
     /// </summary>
-    bool IsTransient { get; }
+    bool IsTransient();
+
+    /// <summary>
+    /// 实体相等性比较，默认根据keys比较
+    /// </summary>
+    /// <param name="other"></param>
+    /// <returns></returns>
+    bool EntityEquals(IEntity? other);
 }
 
 /// <summary>
 /// 实体顶层泛型抽象
 /// </summary>
 /// <typeparam name="TKey">唯一主键类型</typeparam>
-// ReSharper disable once TypeParameterCanBeVariant
-public interface IEntity<TKey> : IEntity
+public interface IEntity<out TKey> : IEntity where TKey : struct
 {
     /// <summary>
     /// 实体唯一标识

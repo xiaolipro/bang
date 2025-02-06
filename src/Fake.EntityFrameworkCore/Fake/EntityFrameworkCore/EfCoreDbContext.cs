@@ -43,10 +43,8 @@ public abstract class EfCoreDbContext<TDbContext>(DbContextOptions<TDbContext> o
     {
         TrySetDatabaseProvider(modelBuilder);
 
-        modelBuilder.Ignore<DomainEvent>();
         foreach (var entityType in modelBuilder.Model.GetEntityTypes())
         {
-            entityType.AddIgnored(nameof(IHasDomainEvent.DomainEvents));
             ConfigureBasePropertiesMethodInfo
                 .MakeGenericMethod(entityType.ClrType)
                 .Invoke(this, [modelBuilder, entityType]);
@@ -236,9 +234,9 @@ public abstract class EfCoreDbContext<TDbContext>(DbContextOptions<TDbContext> o
     {
         if (entry.Entity is not IEntity entity) return false;
 
-        if (!entity.IsTransient) return false;
+        if (!entity.IsTransient()) return false;
 
-        var idProperty = entry.Property(nameof(IEntity<Any>.Id)).Metadata.PropertyInfo;
+        var idProperty = entry.Property(nameof(IEntity<AnyKey>.Id)).Metadata.PropertyInfo;
 
         if (idProperty == null) return false;
 
@@ -276,7 +274,7 @@ public abstract class EfCoreDbContext<TDbContext>(DbContextOptions<TDbContext> o
             .TryConfigureCreator()
             .TryConfigureModifier()
             .TryConfigureSoftDelete()
-            .TryConfigureConcurrencyStamp()
+            .TryConfigureAggregateRoot()
             .TryConfigureExtraProperties();
 
         // 配置全局过滤器

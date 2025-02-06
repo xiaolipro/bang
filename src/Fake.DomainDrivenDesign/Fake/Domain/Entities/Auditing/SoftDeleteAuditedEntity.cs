@@ -5,7 +5,7 @@ namespace Fake.Domain.Entities.Auditing;
 /// </summary>
 /// <typeparam name="TKey">id类型</typeparam>
 [Serializable]
-public abstract class SoftDeleteAuditedEntity<TKey> : Entity<TKey>, ISoftDelete
+public abstract class SoftDeleteAuditedEntity<TKey> : Entity<TKey>, ISoftDelete where TKey : struct
 {
     public virtual bool IsDeleted { get; set; }
     public bool HardDeleted { get; } = false;

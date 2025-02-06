@@ -86,7 +86,7 @@ public abstract class SugarDbContext<TDbContext> where TDbContext : SugarDbConte
 
     protected virtual void ConfigureEntityService(PropertyInfo property, EntityColumnInfo column)
     {
-        if (property.Name == nameof(Entity<Any>.Id))
+        if (property.Name == nameof(Entity<AnyKey>.Id))
         {
             column.IsPrimarykey = true;
         }

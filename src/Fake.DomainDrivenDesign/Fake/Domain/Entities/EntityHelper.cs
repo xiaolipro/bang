@@ -75,6 +75,7 @@ public static class EntityHelper
     /// <param name="checkIgnore"></param>
     /// <typeparam name="TKey"></typeparam>
     public static void TrySetId<TKey>(IEntity<TKey> entity, Func<TKey> idFactory, bool checkIgnore = false)
+        where TKey : struct
     {
         var ignoreAttributeTypes = checkIgnore ? [typeof(DisableIdGenerationAttribute)] : Array.Empty<Type>();
         ReflectionHelper.TrySetProperty(entity, x => x.Id, idFactory, ignoreAttributeTypes);

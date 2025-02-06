@@ -33,4 +33,16 @@ public class CurrentUser(ICurrentPrincipalAccessor currentPrincipalAccessor) : I
             .Where(c => c.Type == claimType)
             .ToArray() ?? [];
     }
+    
+    public TUserId? GetUserIdOrNull<TUserId>() where TUserId : struct
+    {
+        var principal = currentPrincipalAccessor.Principal;
+        var userId = principal?.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier);
+        if (userId == null || userId.Value.IsNullOrWhiteSpace())
+        {
+            return null;
+        }
+        
+        return Convert.ChangeType(userId.Value, typeof(TUserId)) as TUserId?;
+    }
 }

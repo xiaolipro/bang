@@ -1,4 +1,5 @@
-﻿using Fake.EntityFrameworkCore.ValueCompares;
+﻿using Fake.Domain.Events;
+using Fake.EntityFrameworkCore.ValueCompares;
 using Fake.EntityFrameworkCore.ValueConverters;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -12,11 +13,13 @@ public static class FakeEntityTypeBuilderExtensions
             .TryConfigureModifier()
             .TryConfigureSoftDelete()
             .TryConfigureExtraProperties()
-            .TryConfigureConcurrencyStamp();
+            .TryConfigureAggregateRoot();
     }
 
-    public static EntityTypeBuilder TryConfigureConcurrencyStamp(this EntityTypeBuilder builder)
+    public static EntityTypeBuilder TryConfigureAggregateRoot(this EntityTypeBuilder builder)
     {
+        builder.Ignore(nameof(IHasDomainEvent.DomainEvents));
+        
         if (builder.Metadata.ClrType.IsAssignableTo<IAggregateRoot>())
         {
             builder.Property(nameof(IAggregateRoot.ConcurrencyStamp))
@@ -50,7 +53,17 @@ public static class FakeEntityTypeBuilderExtensions
         {
             builder.Property(nameof(IHasCreateUserId.CreateUserId))
                 .HasColumnName(nameof(IHasCreateUserId.CreateUserId));
+        }
+        
+        if (builder.Metadata.ClrType.IsAssignableTo(typeof(IHasCreateUserId<>)))
+        {
+            builder.Property(nameof(IHasCreateUserId<AnyKey>.CreateUserId))
+                .HasColumnName(nameof(IHasCreateUserId<AnyKey>.CreateUserId))
+                .IsRequired();
+        }
 
+        if (builder.Metadata.ClrType.IsAssignableTo<IHasCreateTime>())
+        {
             builder.Property(nameof(IHasCreateTime.CreateTime))
                 .HasColumnName(nameof(IHasCreateTime.CreateTime))
                 .IsRequired();
@@ -64,8 +77,19 @@ public static class FakeEntityTypeBuilderExtensions
         if (builder.Metadata.ClrType.IsAssignableTo<IHasUpdateUserId>())
         {
             builder.Property(nameof(IHasUpdateUserId.UpdateUserId))
-                .HasColumnName(nameof(IHasUpdateUserId.UpdateUserId));
-
+                .HasColumnName(nameof(IHasUpdateUserId.UpdateUserId))
+                .IsRequired();
+        }
+        
+        if (builder.Metadata.ClrType.IsAssignableTo(typeof(IHasUpdateUserId<>)))
+        {
+            builder.Property(nameof(IHasUpdateUserId<AnyKey>.UpdateUserId))
+                .HasColumnName(nameof(IHasUpdateUserId<AnyKey>.UpdateUserId))
+                .IsRequired();
+        }
+        
+        if (builder.Metadata.ClrType.IsAssignableTo<IHasUpdateTime>())
+        {
             builder.Property(nameof(IHasUpdateTime.UpdateTime))
                 .HasColumnName(nameof(IHasUpdateTime.UpdateTime))
                 .IsRequired();
