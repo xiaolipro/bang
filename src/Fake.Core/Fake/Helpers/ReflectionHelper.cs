@@ -21,8 +21,9 @@ public static class ReflectionHelper
     {
         if (obj is null) return;
 
-        var cacheKey = $"{obj.GetType().FullName}-{propertySelector}-{ignoreAttributeTypes.JoinAsString("-")}";
+        var cacheKey = $"{obj.GetType().FullName}_{propertySelector}_{ignoreAttributeTypes.JoinAsString("_")}";
 
+        // ReSharper disable once HeapView.CanAvoidClosure
         var propertyInfo = PropertiesCaches.GetOrAdd(cacheKey, _ =>
         {
             // 必须从字段或属性上读取

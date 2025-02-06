@@ -32,6 +32,7 @@ public class DefaultAuditPropertySetter(ICurrentUser currentUser, IFakeClock fak
             var hasCreateUserId = entity.GetType().GetInterface(typeof(IHasCreateUserId<>).Name);
             if (hasCreateUserId != null)
             {
+                // 接近原生调用方法的性能
                 GetGenericMethodExpression(hasCreateUserId.GetGenericArguments()[0], true).Invoke(this, entity);
             }
         }
@@ -102,7 +103,8 @@ public class DefaultAuditPropertySetter(ICurrentUser currentUser, IFakeClock fak
 
     private Action<DefaultAuditPropertySetter, IEntity> GetGenericMethodExpression(Type genericType, bool isCreate)
     {
-        var key = $"{genericType.Name}-{isCreate}";
+        var key = $"{genericType.Name}_{isCreate}";
+        // ReSharper disable once HeapView.CanAvoidClosure
         return CachedExpressions.GetOrAdd(key, _ =>
             {
                 var method = GetType()
