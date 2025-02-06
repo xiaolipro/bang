@@ -42,14 +42,13 @@ public class RabbitMqChannelPool(
     public virtual bool Release(string channelName = "", string? connectionName = null)
     {
         var key = $"{connectionName}_{channelName}";
-        if (Channels.TryGetValue(key, out var wrapper))
-        {
-            wrapper.Channel.Dispose();
-            Channels.TryRemove(key, out _);
-            return true;
-        }
-
-        return false;
+        if (!Channels.TryGetValue(key, out var wrapper)) return false;
+        
+        // tips: thread safe
+        wrapper.Acquire();
+        wrapper.Channel.Dispose();
+        Channels.TryRemove(key, out _);
+        return true;
     }
 
     public virtual void Dispose()

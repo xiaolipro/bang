@@ -1,7 +1,7 @@
 {
   "culture": "en",
   "texts": {
-    "400": "Bussiness Error",
+    "400": "Business Error",
     "401": "Unauthorized",
     "403": "Forbidden",
     "404": "Page not found",
