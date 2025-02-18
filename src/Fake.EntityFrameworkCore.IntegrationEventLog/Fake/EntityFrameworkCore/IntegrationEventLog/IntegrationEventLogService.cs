@@ -1,21 +1,17 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
-using System.Threading.Tasks;
 using Fake.EventBus;
 using Fake.EventBus.Distributed;
+using Fake.Helpers;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
 
 namespace Fake.EntityFrameworkCore.IntegrationEventLog;
 
-public class IntegrationEventLogService(IntegrationEventLogContext integrationEventLogContext)
-    : IIntegrationEventLogService
+public class IntegrationEventLogService<TContext>(TContext context) : IIntegrationEventLogService, IDisposable
+    where TContext : DbContext
 {
     private static readonly List<Type> EventTypes =
-        Assembly.Load(Assembly.GetEntryAssembly()?.FullName ?? string.Empty)
-            .GetTypes()
+        ReflectionHelper.GetAssemblyAllTypes(Assembly.GetEntryAssembly()!)
             .Where(t => t.Name.EndsWith(nameof(IntegrationEvent)))
             .ToList();
 
@@ -25,8 +21,9 @@ public class IntegrationEventLogService(IntegrationEventLogContext integrationEv
     {
         var tid = transactionId.ToString();
 
-        var result = await integrationEventLogContext.IntegrationEventLogs
-            .Where(e => e.TransactionId == tid && e.State == EventStateEnum.NotPublished).ToListAsync();
+        var result = await context.Set<IntegrationEventLogEntry>()
+            .Where(e => e.TransactionId == tid && e.State == EventStateEnum.NotPublished)
+            .ToListAsync();
 
         if (result.Any())
         {
@@ -39,16 +36,16 @@ public class IntegrationEventLogService(IntegrationEventLogContext integrationEv
         return new List<IntegrationEventLogEntry>();
     }
 
-    public Task SaveEventAsync(Event @event, IDbContextTransaction? transaction = null)
+    public Task SaveEventAsync(IntegrationEvent @event, IDbContextTransaction? transaction = null)
     {
         //if (transaction == null) throw new ArgumentNullException(nameof(transaction));
 
         var eventLogEntry = new IntegrationEventLogEntry(@event, transaction?.TransactionId ?? default);
 
-        integrationEventLogContext.Database.UseTransaction(transaction?.GetDbTransaction());
-        integrationEventLogContext.IntegrationEventLogs.Add(eventLogEntry);
+        context.Database.UseTransaction(transaction?.GetDbTransaction());
+        context.IntegrationEventLogs.Add(eventLogEntry);
 
-        return integrationEventLogContext.SaveChangesAsync();
+        return context.SaveChangesAsync();
     }
 
     public Task MarkEventAsPublishedAsync(Guid eventId)

@@ -35,7 +35,7 @@ public class FakeTypeScanner : IFakeTypeScanner
                     continue;
                 }
 
-                allTypes.AddRange(types.Where(type => type != null));
+                allTypes.AddRange(types);
             }
             catch
             {

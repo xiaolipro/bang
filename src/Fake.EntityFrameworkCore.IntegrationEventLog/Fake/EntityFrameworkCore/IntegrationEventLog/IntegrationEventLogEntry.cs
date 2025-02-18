@@ -1,36 +1,33 @@
-﻿using System;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
+﻿using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json;
 using Fake.EventBus;
+using Fake.EventBus.Distributed;
+// ReSharper disable EntityFramework.ModelValidation.UnlimitedStringLength
 
 namespace Fake.EntityFrameworkCore.IntegrationEventLog;
 
 public class IntegrationEventLogEntry
 {
-    private IntegrationEventLogEntry()
-    {
-    }
-
-    public IntegrationEventLogEntry(Event @event, Guid transactionId)
+    private static readonly JsonSerializerOptions s_indentedOptions = new() { WriteIndented = true };
+    private static readonly JsonSerializerOptions s_caseInsensitiveOptions = new() { PropertyNameCaseInsensitive = true };
+    
+    public IntegrationEventLogEntry(IntegrationEvent @event, Guid transactionId)
     {
         EventId = @event.Id;
         CreationTime = @event.CreationTime;
-        EventTypeName = @event.GetType().FullName ?? String.Empty;
-        Content = JsonSerializer.Serialize(@event);
+        EventName = @event.GetType().Name;
+        Content = JsonSerializer.Serialize(@event, s_indentedOptions);
         State = EventStateEnum.NotPublished;
         TimesSent = 0;
         TransactionId = transactionId.ToString();
     }
 
-    public IntegrationEventLogEntry(string transactionId)
-    {
-        TransactionId = transactionId;
-    }
-
     public Guid EventId { get; private set; }
-
-    public string EventTypeName { get; private set; } = default!;
+    
+    /// <summary>
+    /// 事件名称
+    /// </summary>
+    public string EventName { get; private set; }
 
     /// <summary>
     /// 事件状态
@@ -50,14 +47,14 @@ public class IntegrationEventLogEntry
     /// <summary>
     /// 发送内容
     /// </summary>
-    public string Content { get; private set; } = default!;
+    public string Content { get; private set; }
 
     /// <summary>
     /// 事务Id
     /// </summary>
-    public string TransactionId { get; private set; } = default!;
+    public string TransactionId { get; private set; }
 
-    [NotMapped] public string EventTypeShortName => EventTypeName.Split('.').Last();
+    [NotMapped] public string EventTypeShortName => EventName.Split('.').Last();
     [NotMapped] public Event? IntegrationEvent { get; private set; }
 
 

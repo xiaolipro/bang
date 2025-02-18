@@ -1,10 +1,10 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
-    <Import Project="../../common.props" />
-    <Import Project="../../configureawait.props" />
+    <Import Project="../../common.props"/>
+    <Import Project="../../configureawait.props"/>
 
     <ItemGroup>
-      <ProjectReference Include="..\Fake.Core\Fake.Core.csproj" />
+        <ProjectReference Include="..\Fake.Core\Fake.Core.csproj"/>
         <ProjectReference Include="..\Fake.UnitOfWork\Fake.UnitOfWork.csproj"/>
     </ItemGroup>
 

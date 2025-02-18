@@ -42,7 +42,7 @@ public class IntegrationEventLogContext : EfCoreDbContext<IntegrationEventLogCon
         builder.Property(e => e.TimesSent)
             .IsRequired();
 
-        builder.Property(e => e.EventTypeName)
+        builder.Property(e => e.EventName)
             .HasMaxLength(30)
             .IsRequired();
     }

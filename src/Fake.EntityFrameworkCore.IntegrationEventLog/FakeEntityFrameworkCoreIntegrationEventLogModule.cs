@@ -9,6 +9,6 @@ public class FakeEntityFrameworkCoreIntegrationEventLogModule:FakeModule
 {
     public override void ConfigureServices(ServiceConfigurationContext context)
     {
-        context.Services.AddTransient<IIntegrationEventLogService, IntegrationEventLogService>();
+        //context.Services.AddTransient<IIntegrationEventLogService, IntegrationEventLogService>();
     }
 }

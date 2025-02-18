@@ -1,6 +1,8 @@
 ﻿using System.Net.Sockets;
 using Fake.EventBus.Distributed;
 using Microsoft.Extensions.Hosting;
+using OpenTelemetry;
+using OpenTelemetry.Context.Propagation;
 using Polly;
 using Polly.Retry;
 using RabbitMQ.Client.Exceptions;
@@ -27,6 +29,8 @@ public class RabbitMqEventBus(
     private readonly EventBusSubscriptionOptions _subscriptionOptions = subscriptionOptions.Value;
 
     private readonly ResiliencePipeline _pipeline = CreateResiliencePipeline(eventBusOptions.Value.RetryCount);
+    private readonly ActivitySource _activitySource = new("Fake.EventBus.RabbitMQ");
+    private readonly TextMapPropagator _propagator = Propagators.DefaultTextMapPropagator;
 
     private readonly IConnection _connection = rabbitMqConnectionPool.Get(eventBusOptions.Value.ConnectionName);
     private IModel? _consumerChannel; // 消费者专用通道
@@ -52,9 +56,42 @@ public class RabbitMqEventBus(
 
         _pipeline.Execute(chan =>
             {
-                logger.LogDebug("Publishing event to RabbitMQ: {EventId} ({EventName})", @event.Id, routingKey);
-                chan.BasicPublish(exchange: _exchangeName, routingKey: routingKey, mandatory: true,
-                    basicProperties: properties, body: body);
+                // Start an activity with a name following the semantic convention of the OpenTelemetry messaging specification.
+                // https://github.com/open-telemetry/semantic-conventions/blob/main/docs/messaging/messaging-spans.md
+                using var activity = _activitySource.StartActivity($"{routingKey} publish", ActivityKind.Client);
+
+                // Depending on Sampling (and whether a listener is registered or not), the activity above may not be created.
+                // If it is created, then propagate its context. If it is not created, the propagate the Current context, if any.
+                ActivityContext contextToInject = default;
+                if (activity != null)
+                {
+                    contextToInject = activity.Context;
+                }
+                else if (Activity.Current != null)
+                {
+                    contextToInject = Activity.Current.Context;
+                }
+                
+                _propagator.Inject(new PropagationContext(contextToInject, Baggage.Current), properties,
+                    static (props, key, value) =>
+                        {
+                            props.Headers ??= new Dictionary<string, object>();
+                            props.Headers[key] = value;
+                        });
+        
+                SetActivityContext(activity, routingKey, "publish");
+
+                try
+                {
+                    logger.LogDebug("Publishing event to RabbitMQ: {EventId} ({EventName})", @event.Id, routingKey);
+                    chan.BasicPublish(exchange: _exchangeName, routingKey: routingKey, mandatory: true,
+                        basicProperties: properties, body: body);
+                }
+                catch (Exception ex)
+                {
+                    activity.SetExceptionTags(ex);
+                    throw;
+                }
             }, channel);
 
         return Task.CompletedTask;
@@ -259,6 +296,20 @@ public class RabbitMqEventBus(
         static TimeSpan? GenerateDelay(int attempt)
         {
             return TimeSpan.FromSeconds(Math.Pow(2, attempt));
+        }
+    }
+    
+    private static void SetActivityContext(Activity? activity, string routingKey, string operation)
+    {
+        if (activity is not null)
+        {
+            // These tags are added demonstrating the semantic conventions of the OpenTelemetry messaging specification
+            // https://github.com/open-telemetry/semantic-conventions/blob/main/docs/messaging/messaging-spans.md
+            activity.SetTag("messaging.system", "rabbitmq");
+            activity.SetTag("messaging.destination_kind", "queue");
+            activity.SetTag("messaging.operation", operation);
+            activity.SetTag("messaging.destination.name", routingKey);
+            activity.SetTag("messaging.rabbitmq.routing_key", routingKey);
         }
     }
 

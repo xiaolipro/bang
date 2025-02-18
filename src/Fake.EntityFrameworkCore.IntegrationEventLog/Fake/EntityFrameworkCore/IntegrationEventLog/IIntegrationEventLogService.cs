@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using Fake.EventBus;
+﻿using Fake.EventBus.Distributed;
 using Microsoft.EntityFrameworkCore.Storage;
 
 namespace Fake.EntityFrameworkCore.IntegrationEventLog;
@@ -13,7 +10,7 @@ public interface IIntegrationEventLogService : IDisposable
     /// <exception cref="T:System.ArgumentNullException">
     /// <paramref name="transaction" /> is <see langword="null" />.
     /// </exception>
-    Task SaveEventAsync(Event integrationEvent, IDbContextTransaction? transaction = null);
+    Task SaveEventAsync(IntegrationEvent integrationEvent, IDbContextTransaction? transaction = null);
 
     Task MarkEventAsPublishedAsync(Guid eventId);
     Task MarkEventAsInProgressAsync(Guid eventId);
